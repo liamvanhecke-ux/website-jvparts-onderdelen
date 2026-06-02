@@ -1,0 +1,10 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#ecd2a2"/><stop offset="55%" stop-color="#d4af6a"/><stop offset="100%" stop-color="#b8924a"/>
+  </linearGradient></defs>
+  <!-- gold gear ring, transparent center, no background -->
+  <path fill="url(#g)" fill-rule="evenodd" d="M 172.44,80.59 L 185.11,87.66 L 185.11,112.34 L 172.44,119.41 L 172.44,119.41 L 179.88,131.87 L 167.54,153.24 L 153.03,153.03 L 153.03,153.03 L 153.24,167.54 L 131.87,179.88 L 119.41,172.44 L 119.41,172.44 L 112.34,185.11 L 87.66,185.11 L 80.59,172.44 L 80.59,172.44 L 68.13,179.88 L 46.76,167.54 L 46.97,153.03 L 46.97,153.03 L 32.46,153.24 L 20.12,131.87 L 27.56,119.41 L 27.56,119.41 L 14.89,112.34 L 14.89,87.66 L 27.56,80.59 L 27.56,80.59 L 20.12,68.13 L 32.46,46.76 L 46.97,46.97 L 46.97,46.97 L 46.76,32.46 L 68.13,20.12 L 80.59,27.56 L 80.59,27.56 L 87.66,14.89 L 112.34,14.89 L 119.41,27.56 L 119.41,27.56 L 131.87,20.12 L 153.24,32.46 L 153.03,46.97 L 153.03,46.97 L 167.54,46.76 L 179.88,68.13 L 172.44,80.59 Z M 158.00,100.00 A 58.00,58.00 0 1 0 42.00,100.00 A 58.00,58.00 0 1 0 158.00,100.00 Z"/>
+  <text x="100" y="104" text-anchor="middle" dominant-baseline="central"
+        font-family="Georgia,'Times New Roman',serif" font-weight="700"
+        font-size="84" letter-spacing="-3" fill="url(#g)">JV</text>
+</svg>
