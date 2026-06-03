@@ -93,6 +93,49 @@ body {
     padding: 16px 0;
 }
 
+.form-title {
+    margin-bottom: 20px;
+
+}
+
+.form-title h2 {
+    color: var(--dark);
+    font-size: 1.5rem;
+    margin-bottom: 6px;
+}
+
+.form-title h2 span {
+    color: var(--gold-deep);
+}
+
+.form-title p {
+    font-size: 14px;
+    color: var(--muted);
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.card {
+    border-radius: 20px;
+    box-shadow: 0 1px 3px rgba(21, 36, 61, .05);
+    width: 100%;
+    max-width: 520px;
+    padding-top: 50px;
+    padding-bottom: 50px;
+}
+
+.card-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
 #sidebar nav a {
     display: flex;
     align-items: center;
