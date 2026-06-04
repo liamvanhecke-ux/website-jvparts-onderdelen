@@ -24,7 +24,7 @@
     --text: #222;
     --muted: #8a8f98;
 
-    /* status */
+
     --success: #2f8a5b;
     --success-bg: #e7f3ec;
     --amber: #9a6b08;
@@ -32,15 +32,45 @@
     --danger: #a32d2d;
     --danger-bg: #f7e9e9;
 
-    /* maten */
+
     --sidebar-width: 260px;
     --header-h: 60px;
+}
+
+.contact-grid {
+    max-width: 950px;
+    margin: 0 auto;
+    padding: 28px 20px;
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    column-gap: 16px;
+    align-items: start;
+}
+
+.contact-grid .card {
+    max-width: 100%;
+}
+
+.info-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+@media (max-width: 800px) {
+    .contact-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 body {
     font-family: 'Segoe UI', sans-serif;
     background: var(--page-bg);
     color: var(--text);
+}
+
+#foot span {
+    color: var(--gold-deep);
 }
 
 /* ── OVERLAY ── */
@@ -119,8 +149,9 @@ body {
     gap: 7px;
 }
 
-.card {
+.card.groot {
     border-radius: 20px;
+    border: 1px solid var(--gold) !important;
     box-shadow: 0 1px 3px rgba(21, 36, 61, .05);
     width: 100%;
     max-width: 520px;
@@ -128,12 +159,59 @@ body {
     padding-bottom: 50px;
 }
 
+.card {
+
+    border-radius: 20px;
+    border: 1px solid var(--gold) !important;
+
+}
+
 .card-body {
     display: flex;
     flex-direction: column;
-    align-items: center;
     padding-left: 20px;
     padding-right: 20px;
+}
+
+.card-body.centered {
+    align-items: center;
+}
+
+.card-body p {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.card-body p small {
+    font-size: .72rem;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    color: var(--muted);
+
+}
+
+.card-body p span {
+    color: var(--dark);
+    font-weight: 600;
+
+}
+
+.card-body p a {
+    color: var(--dark);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.card-body p a:hover {
+    color: var(--gold-deep);
+}
+
+.card-body p img {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
 }
 
 #sidebar nav a {
@@ -599,16 +677,7 @@ footer {
 }
 
 /* contact pagina */
-.form-wrapper {
-    display: flex;
-    justify-content: center;
 
-    align-items: center;
-
-    min-height: calc(100vh - 60px);
-
-    padding: 20px;
-}
 
 form {
     display: flex;

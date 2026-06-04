@@ -63,28 +63,28 @@
             <span class="dot" id="cart-count-top">0</span>
         </a>
     </header>
-    <div class="form-wrapper">
-        <div class="card">
-            <div class="card-body">
+    <div class="contact-grid">
+        <div class="card groot">
+            <div class="card-body centered">
                 <div class="form-title">
-                    <h2><span>Contact</span></h2>
+                    <h2>Contact</h2>
                     <p>Vul hier je gegevens in en we nemen snel contact met je op.</p>
                 </div>
                 <form action="https://api.web3forms.com/submit" method="POST">
                     <input type="hidden" name="access_key" value="29357d41-a413-48bb-b211-559dca9a44d7">
                     <input type="hidden" name="subject" value="Nieuw bericht via contactformulier">
                     <div class="field">
-                        <label for="naam" class="form-label">Voornaam & achternaam:</label>
+                        <label for="naam" class="form-label">Voornaam & achternaam</label>
                         <input type="text" class="form-control" id="naam" placeholder="Vul voornaam & achternaam in"
                                name="naam" required>
                     </div>
                     <div class="field">
-                        <label for="email" class="form-label">Email:</label>
+                        <label for="email" class="form-label">Email</label>
                         <input type="email" class="form-control" id="email" placeholder="Vul email in" name="email"
                                required>
                     </div>
                     <div class="field">
-                        <label class="form-label">Telefoon:</label>
+                        <label class="form-label">Telefoon</label>
                         <div class="tel-group">
                             <div class="land-dropdown" id="landDropdown">
                                 <button type="button" class="land-knop" id="landKnop">
@@ -106,13 +106,43 @@
                     <div class="field">
                         <label for="bericht" class="form-label">Bericht:</label>
                         <textarea class="form-control" id="bericht" name="bericht" rows="4"
-                                  placeholder="Waarmee kunnen we je helpen?"></textarea>
+                                  placeholder="Waarmee kunnen we je helpen?" required></textarea>
                     </div>
                     <button type="submit" class="btn btn-primary">verzenden</button>
                 </form>
             </div>
         </div>
+        <div class="info-stack">
+            <div class="card">
+                <div class="card-body">
+                    <div class="form-title">
+                        <h5>gegevens</h5>
+                        <p>
+                            <img src="images/locatie.png" alt="" width="30">
+                            <span><small>ADRES</small><br>Nederzwalmsesteenweg 94, 9750 Zingem</span>
+                        </p>
+                        <p>
+                            <img src="images/telefoon.png" alt="" width="30">
+                            <span><small>TELEFOON</small><br><a href="tel:+32470123456">+32 470 12 34 56</a></span>
+                        </p>
+                        <p>
+                            <img src="images/email.png" alt="" width="30">
+                            <span><small>E-MAIL</small><br><a href="mailto:info@jvparts.be">info@jvparts.be</a></span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <div class="form-title">
+                        <h5>Volg ons</h5>
+                        <!-- nog iets van icoontjes toevoegen van insta  -->
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+    <footer id="foot"> &copy; 2026 <span>JV-Parts</span>&mdash; Alle rechten voorbehouden </footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         const knop = document.getElementById("landKnop");
