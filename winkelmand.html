@@ -42,7 +42,6 @@
         </nav>
         <div class="sidebar-close" id="sidebar-close">✕ &nbsp;Sluit menu</div>
     </aside>
-
     <header id="topbar">
         <button id="hamburger" aria-label="Menu openen">
             <span></span><span></span><span></span>
@@ -64,10 +63,29 @@
             <span class="dot" id="cart-count-top">0</span>
         </a>
     </header>
-
     <main id="main">
+        <div class="stappen">
+            <span class="stap">
+                <span class="stap-nummer actief">1</span>
+                <span class="stap-label actief">winkelmand</span>
+            </span>
+            <span class="pijl">›</span>
+            <span class="stap">
+                <span class="stap-nummer inactief">2</span>
+                <span class="stap-label inactief">gegevens </span>
+            </span>
+            <span class="pijl">›</span>
+            <span class="stap">
+                <span class="stap-nummer inactief">3</span>
+                <span class="stap-label inactief">betalen</span>
+            </span>
+            <span class="pijl">›</span>
+            <span class="stap">
+                <span class="stap-nummer inactief">4</span>
+                <span class="stap-label inactief">klaar</span>
+            </span>
+        </div>
         <h2 class="section-title">Winkelmand</h2>
-
         <div class="cart-layout">
             <!-- Artikelen -->
             <div class="cart-items">
@@ -89,7 +107,8 @@
                     </div>
                     <div class="cart-item-price">&#8364;&nbsp;22,95</div>
                     <button class="cart-item-remove" aria-label="Verwijder artikel" onclick="removeItem(this)">
-                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
+                             viewBox="0 0 24 24">
                             <polyline points="3 6 5 6 21 6" />
                             <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
                             <path d="M10 11v6M14 11v6" />
@@ -97,7 +116,6 @@
                         </svg>
                     </button>
                 </div>
-
                 <div class="cart-item">
                     <div class="cart-item-img">
                         <svg fill="none" stroke="#ccc" stroke-width="1.5" viewBox="0 0 24 24">
@@ -116,7 +134,8 @@
                     </div>
                     <div class="cart-item-price">&#8364;&nbsp;15,00</div>
                     <button class="cart-item-remove" aria-label="Verwijder artikel" onclick="removeItem(this)">
-                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
+                             viewBox="0 0 24 24">
                             <polyline points="3 6 5 6 21 6" />
                             <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
                             <path d="M10 11v6M14 11v6" />
@@ -124,17 +143,35 @@
                         </svg>
                     </button>
                 </div>
-
+                <fieldset class="verzending">
+                    <legend>Verzendmethode</legend>
+                    <label class="verzend-optie">
+                        <input type="radio" name="verzending" value="bpost" data-prijs="4.95" checked>
+                        <span class="info">
+                            <span class="titel">thuislevering</span>
+                            <span class="sub">2–4 werkdagen</span>
+                        </span>
+                        <span class="prijs">€ 4,95</span>
+                    </label>
+                    <label class="verzend-optie">
+                        <input type="radio" name="verzending" value="afhalen" data-prijs="0">
+                        <span class="info">
+                            <span class="titel">Afhalen</span>
+                            <span class="sub">klaar binnen 1 dag</span>
+                        </span>
+                        <span class="prijs gratis">Gratis</span>
+                    </label>
+                </fieldset>
                 <div class="cart-empty" id="cart-empty" style="display:none;">
                     <svg width="48" height="48" fill="none" stroke="#ccc" stroke-width="1.5" viewBox="0 0 24 24">
-                        <circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" />
+                        <circle cx="9" cy="21" r="1" />
+                        <circle cx="20" cy="21" r="1" />
                         <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
                     </svg>
                     <p>Je winkelmand is leeg.</p>
                     <a href="index.html" class="btn-primary">Verder winkelen</a>
                 </div>
             </div>
-
             <!-- Samenvatting -->
             <aside class="cart-summary card">
                 <div class="card-body">
@@ -158,9 +195,7 @@
             </aside>
         </div>
     </main>
-
     <footer id="foot">&copy; 2026 <span>JV-Parts</span>&mdash; Alle rechten voorbehouden</footer>
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         const sidebar = document.getElementById('sidebar');

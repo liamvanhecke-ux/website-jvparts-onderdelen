@@ -365,12 +365,12 @@ body {
 /* ── HERO ── */
 .hero {
     background: linear-gradient(135deg, var(--dark) 0%, #16213e 100%);
-    border-radius: 16px;
-    padding: 48px 40px;
+    padding: 64px 40px;
     color: #fff;
     margin-bottom: 40px;
     position: relative;
     overflow: hidden;
+    width: 100%;
 }
 
 .hero::after {
@@ -429,6 +429,7 @@ body {
     display: flex;
     align-items: center;
     gap: 10px;
+    margin-top: 30px;
 }
 
 .section-title::after {
@@ -770,7 +771,7 @@ form {
 /* ── WINKELMAND ── */
 .cart-layout {
     display: grid;
-    grid-template-columns: 1fr 320px;
+    grid-template-columns: 1fr 340px;
     gap: 24px;
     align-items: start;
 }
@@ -788,7 +789,9 @@ form {
     background: var(--card-bg);
     border: 1px solid var(--border);
     border-radius: 14px;
-    padding: 16px;
+    padding: 24px 28px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .cart-item-img {
@@ -815,11 +818,11 @@ form {
 .cart-item-name {
     font-weight: 600;
     color: var(--dark);
-    font-size: .95rem;
+    font-size: 17px;
 }
 
 .cart-item-sub {
-    font-size: .8rem;
+    font-size: 14px;
     color: var(--muted);
     margin-top: 2px;
 }
@@ -953,6 +956,86 @@ form {
 .cart-continue:hover {
     color: var(--gold-deep);
 }
+
+.verzend-optie {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+
+.verzend-optie input {
+    position: absolute;
+    opacity: 0;
+}
+
+.verzend-optie:has(input:checked) {
+    border-color: #185FA5;
+    border-width: 2px;
+}
+
+.info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.titel {
+    font-weight: 500;
+    font-size: 13px;
+}
+
+.sub {
+    font-size: 12px;
+    color: #666;
+}
+
+.prijs {
+    font-weight: 500;
+    font-size: 13px;
+}
+
+.gratis {
+    color: green;
+}
+
+.stap-nummer {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+}
+
+.stap-nummer.actief {
+    background: #2C2C2A;
+    color: #fff;
+}
+
+.stap-label.actief {
+    color: #2C2C2A;
+    font-weight: 500;
+}
+
+
+.stap-nummer.inactief {
+
+    border: 1px solid #ccc;
+    color: #999;
+}
+
+.verzending {
+    margin-top: 24px;
+
+}
+
 
 @media (max-width: 700px) {
     .cart-layout {
