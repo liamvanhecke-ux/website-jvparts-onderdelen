@@ -1,0 +1,46 @@
+{
+  "products": [
+    {
+      "name": "Cilinderset 50cc",
+      "subtitle": "Honda / Peugeot",
+      "price": "34,95",
+      "category": "Motor",
+      "image": ""
+    },
+    {
+      "name": "Remblokken voor",
+      "subtitle": "Universeel",
+      "price": "9,50",
+      "category": "Remmen",
+      "image": ""
+    },
+    {
+      "name": "Sportuitlaat",
+      "subtitle": "Derbi / Aprilia",
+      "price": "79,00",
+      "category": "Uitlaat",
+      "image": ""
+    },
+    {
+      "name": "Variomatik kit",
+      "subtitle": "Yamaha / Kymco",
+      "price": "22,95",
+      "category": "Motor",
+      "image": ""
+    },
+    {
+      "name": "Luchtfilter",
+      "subtitle": "Universeel",
+      "price": "7,50",
+      "category": "Motor",
+      "image": ""
+    },
+    {
+      "name": "Koplamp LED",
+      "subtitle": "Peugeot Speedfight",
+      "price": "18,00",
+      "category": "Electra",
+      "image": ""
+    }
+  ]
+}

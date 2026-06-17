@@ -1,0 +1,31 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: "images/products"
+public_folder: "/images/products"
+
+locale: "nl"
+
+collections:
+  - name: "winkel"
+    label: "Winkel"
+    files:
+      - name: "producten"
+        label: "Producten beheren"
+        file: "data/products.json"
+        fields:
+          - label: "Producten"
+            name: "products"
+            widget: "list"
+            summary: "{{fields.name}} — €{{fields.price}}"
+            fields:
+              - { label: "Naam", name: "name", widget: "string" }
+              - { label: "Merk / Subtitel", name: "subtitle", widget: "string" }
+              - { label: "Prijs (bijv. 34,95)", name: "price", widget: "string" }
+              - label: "Categorie"
+                name: "category"
+                widget: "select"
+                options: ["Motor", "Remmen", "Uitlaat", "Carrosserie", "Electra"]
+                required: false
+              - { label: "Afbeelding", name: "image", widget: "image", required: false }
