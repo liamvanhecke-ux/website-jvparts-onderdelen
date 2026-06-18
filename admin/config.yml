@@ -14,18 +14,38 @@ collections:
       - name: "producten"
         label: "Producten beheren"
         file: "data/products.json"
+        description: "Voeg producten toe, pas ze aan, sleep om te herordenen of verwijder met de ✕. Rechts zie je meteen hoe het in de winkel toont."
         fields:
           - label: "Producten"
             name: "products"
             widget: "list"
+            label_singular: "Product"
             summary: "{{fields.name}} — €{{fields.price}}"
+            add_to_top: true
             fields:
-              - { label: "Naam", name: "name", widget: "string" }
-              - { label: "Merk / Subtitel", name: "subtitle", widget: "string" }
-              - { label: "Prijs (bijv. 34,95)", name: "price", widget: "string" }
+              - label: "Naam"
+                name: "name"
+                widget: "string"
+                hint: "Bijv. Cilinderset 50cc"
+              - label: "Merk / Subtitel"
+                name: "subtitle"
+                widget: "string"
+                hint: "Bijv. Honda / Peugeot of Universeel"
+              - label: "Prijs"
+                name: "price"
+                widget: "string"
+                hint: "Alleen het bedrag, met komma. Bijv. 34,95 — het euroteken wordt automatisch getoond."
+                pattern:
+                  ['^\d+([.,]\d{1,2})?$', "Gebruik enkel cijfers, bijv. 34,95"]
               - label: "Categorie"
                 name: "category"
                 widget: "select"
-                options: ["Motor", "Remmen", "Uitlaat", "Carrosserie", "Electra"]
+                options:
+                  ["Motor", "Remmen", "Uitlaat", "Carrosserie", "Electra"]
+                hint: "Bepaalt onder welke filter het product valt op de site."
                 required: false
-              - { label: "Afbeelding", name: "image", widget: "image", required: false }
+              - label: "Afbeelding"
+                name: "image"
+                widget: "image"
+                required: false
+                hint: "Optioneel. Geen foto? Dan toont de site een nette placeholder."
