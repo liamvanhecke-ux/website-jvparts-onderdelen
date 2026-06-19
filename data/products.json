@@ -1,6 +1,12 @@
 {
   "products": [
     {
+      "name": "iui",
+      "subtitle": "pi",
+      "price": "54",
+      "category": "Remmen"
+    },
+    {
       "name": "cilinder 50cc",
       "subtitle": "Honda / Peugeot",
       "price": "34,95",
