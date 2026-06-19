@@ -39,13 +39,32 @@ collections:
                   ['^\d+([.,]\d{1,2})?$', "Gebruik enkel cijfers, bijv. 34,95"]
               - label: "Categorie"
                 name: "category"
-                widget: "select"
-                options:
-                  ["Motor", "Remmen", "Uitlaat", "Carrosserie", "Electra"]
-                hint: "Bepaalt onder welke filter het product valt op de site."
+                widget: "relation"
+                collection: "winkel"
+                file: "categorieen"
+                search_fields: ["categories.*.name"]
+                value_field: "categories.*.name"
+                display_fields: ["categories.*.name"]
                 required: false
+                hint: "Kies een categorie. Een nieuwe categorie nodig? Voeg ze toe onder 'Categorieën' (links in het menu)."
               - label: "Afbeelding"
                 name: "image"
                 widget: "image"
                 required: false
                 hint: "Optioneel. Geen foto? Dan toont de site een nette placeholder."
+
+      - name: "categorieen"
+        label: "Categorieën"
+        file: "data/categories.json"
+        description: "Voeg hier categorieën toe of verwijder ze. Ze verschijnen automatisch als filterknop op de site én als keuze bij een product."
+        fields:
+          - label: "Categorieën"
+            name: "categories"
+            widget: "list"
+            label_singular: "Categorie"
+            summary: "{{fields.name}}"
+            fields:
+              - label: "Naam"
+                name: "name"
+                widget: "string"
+                hint: "Bijv. Banden of Verlichting"

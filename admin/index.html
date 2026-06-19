@@ -9,12 +9,10 @@
 </head>
 
 <body>
-  <!-- Decap CMS -->
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
-  <!-- Eigen voorvertoning: toont rechts een echte productgrid in JV-Parts stijl -->
   <script>
     (function () {
-      // ── Stijl voor de voorvertoning (mirror van de echte winkel) ──
+
       var previewStyles = `
         .jv-pane { font-family: 'Segoe UI', system-ui, sans-serif; color:#222; padding:20px; }
         .jv-head { display:flex; align-items:center; justify-content:space-between;
@@ -43,7 +41,7 @@
       `;
       CMS.registerPreviewStyle(previewStyles, { raw: true });
 
-      // ── De voorvertoning zelf ──
+
       var ProductenPreview = createClass({
         render: function () {
           var entry = this.props.entry;
@@ -98,7 +96,7 @@
         }
       });
 
-      // Geregistreerd op beide namen, zodat het zeker werkt
+
       CMS.registerPreviewTemplate('winkel', ProductenPreview);
       CMS.registerPreviewTemplate('producten', ProductenPreview);
     })();

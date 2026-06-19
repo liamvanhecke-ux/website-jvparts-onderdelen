@@ -69,13 +69,8 @@
         <a href="#products" class="btn-primary">Bekijk assortiment</a>
     </section>
     <main id="main">
-        <div class="categories">
-            <div class="category-chip active" id="products">Alles</div>
-            <div class="category-chip">Motor</div>
-            <div class="category-chip">Remmen</div>
-            <div class="category-chip">Uitlaat</div>
-            <div class="category-chip">Carrosserie</div>
-            <div class="category-chip">Electra</div>
+        <div class="categories" id="category-chips">
+            <div class="category-chip active" id="products" data-cat="Alles">Alles</div>
         </div>
         <div class="section-title">Producten</div>
         <div class="product-grid" id="product-grid">
@@ -101,7 +96,7 @@
         const placeholderSVG = `<svg fill="none" stroke="#ccc" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="12" cy="12" r="4"/></svg>`;
 
         let allProducts = [];
-        let activeCategory = 'Alles';
+
 
         function renderProducts(products) {
             const grid = document.getElementById('product-grid');
@@ -186,18 +181,37 @@
         }
 
 
-        document.querySelectorAll('.category-chip').forEach(chip => {
-            chip.addEventListener('click', () => {
-                document.querySelectorAll('.category-chip').forEach(c => c.classList.remove('active'));
-                chip.classList.add('active');
-                const cat = chip.textContent.trim();
-                if (cat === 'Alles') {
-                    renderProducts(allProducts);
-                } else {
-                    renderProducts(allProducts.filter(p => p.category === cat));
-                }
+
+        function bindChips() {
+            document.querySelectorAll('.category-chip').forEach(chip => {
+                chip.addEventListener('click', () => {
+                    document.querySelectorAll('.category-chip').forEach(c => c.classList.remove('active'));
+                    chip.classList.add('active');
+                    const cat = chip.dataset.cat || chip.textContent.trim();
+                    if (cat === 'Alles') {
+                        renderProducts(allProducts);
+                    } else {
+                        renderProducts(allProducts.filter(p => p.category === cat));
+                    }
+                });
             });
-        });
+        }
+
+        fetch('/data/categories.json')
+            .then(r => r.json())
+            .then(data => {
+                const container = document.getElementById('category-chips');
+                (data.categories || []).forEach(c => {
+                    if (!c.name) return;
+                    const chip = document.createElement('div');
+                    chip.className = 'category-chip';
+                    chip.dataset.cat = c.name;
+                    chip.textContent = c.name;
+                    container.appendChild(chip);
+                });
+                bindChips();
+            })
+            .catch(() => bindChips());
     </script>
 </body>
 
