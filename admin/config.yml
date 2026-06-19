@@ -45,7 +45,7 @@ collections:
                 value_field: "name"
                 display_fields: ["name"]
                 required: false
-                hint: "Kies een categorie uit de lijst. Een nieuwe nodig? Maak ze aan onder 'Categorieën' (links in het menu)."
+                hint: "Begin te typen en kies een categorie uit de lijst. Een nieuwe nodig? Maak ze aan onder 'Categorieën' (links in het menu)."
               - label: "Afbeelding"
                 name: "image"
                 widget: "image"
