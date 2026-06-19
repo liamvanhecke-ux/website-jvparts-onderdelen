@@ -1,19 +1,22 @@
 {
-    "categories": [
-        {
-            "name": "Motor"
-        },
-        {
-            "name": "Remmen"
-        },
-        {
-            "name": "Uitlaat"
-        },
-        {
-            "name": "Carrosserie"
-        },
-        {
-            "name": "Electra"
-        }
-    ]
+  "categories": [
+    {
+      "name": "Motor"
+    },
+    {
+      "name": "Remmen"
+    },
+    {
+      "name": "Uitlaat"
+    },
+    {
+      "name": "Carrosserie"
+    },
+    {
+      "name": "Electra"
+    },
+    {
+      "name": "verlichting"
+    }
+  ]
 }
