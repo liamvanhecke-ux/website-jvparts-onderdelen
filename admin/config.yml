@@ -40,31 +40,30 @@ collections:
               - label: "Categorie"
                 name: "category"
                 widget: "relation"
-                collection: "winkel"
-                file: "categorieen"
-                search_fields: ["categories.*.name"]
-                value_field: "categories.*.name"
-                display_fields: ["categories.*.name"]
+                collection: "categorieen"
+                search_fields: ["name"]
+                value_field: "name"
+                display_fields: ["name"]
                 required: false
-                hint: "Kies een categorie. Een nieuwe categorie nodig? Voeg ze toe onder 'Categorieën' (links in het menu)."
+                hint: "Kies een categorie uit de lijst. Een nieuwe nodig? Maak ze aan onder 'Categorieën' (links in het menu)."
               - label: "Afbeelding"
                 name: "image"
                 widget: "image"
                 required: false
                 hint: "Optioneel. Geen foto? Dan toont de site een nette placeholder."
 
-      - name: "categorieen"
-        label: "Categorieën"
-        file: "data/categories.json"
-        description: "Voeg hier categorieën toe of verwijder ze. Ze verschijnen automatisch als filterknop op de site én als keuze bij een product."
-        fields:
-          - label: "Categorieën"
-            name: "categories"
-            widget: "list"
-            label_singular: "Categorie"
-            summary: "{{fields.name}}"
-            fields:
-              - label: "Naam"
-                name: "name"
-                widget: "string"
-                hint: "Bijv. Banden of Verlichting"
+  - name: "categorieen"
+    label: "Categorieën"
+    label_singular: "Categorie"
+    folder: "data/categorieen"
+    create: true
+    delete: true
+    identifier_field: "name"
+    summary: "{{fields.name}}"
+    editor:
+      preview: false
+    fields:
+      - label: "Naam"
+        name: "name"
+        widget: "string"
+        hint: "Bijv. Banden. Deze naam verschijnt als keuze bij een product en als filter op de site."

@@ -129,6 +129,7 @@
             .then(data => {
                 allProducts = data.products || [];
                 renderProducts(allProducts);
+                buildChips(allProducts);
             })
             .catch(() => {
                 document.getElementById('product-grid').innerHTML =
@@ -184,7 +185,7 @@
 
         function bindChips() {
             document.querySelectorAll('.category-chip').forEach(chip => {
-                chip.addEventListener('click', () => {
+                chip.onclick = () => {
                     document.querySelectorAll('.category-chip').forEach(c => c.classList.remove('active'));
                     chip.classList.add('active');
                     const cat = chip.dataset.cat || chip.textContent.trim();
@@ -193,8 +194,23 @@
                     } else {
                         renderProducts(allProducts.filter(p => p.category === cat));
                     }
-                });
+                };
             });
+        }
+
+        function buildChips(products) {
+            const container = document.getElementById('category-chips');
+            container.querySelectorAll('.category-chip:not([data-cat="Alles"])').forEach(c => c.remove());
+            const cats = [...new Set(products.map(p => p.category).filter(Boolean))]
+                .sort((a, b) => a.localeCompare(b, 'nl'));
+            cats.forEach(cat => {
+                const chip = document.createElement('div');
+                chip.className = 'category-chip';
+                chip.dataset.cat = cat;
+                chip.textContent = cat;
+                container.appendChild(chip);
+            });
+            bindChips();
         }
 
         fetch('/data/categories.json')
