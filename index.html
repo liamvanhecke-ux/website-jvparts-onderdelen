@@ -213,21 +213,7 @@
             bindChips();
         }
 
-        fetch('/data/categories.json')
-            .then(r => r.json())
-            .then(data => {
-                const container = document.getElementById('category-chips');
-                (data.categories || []).forEach(c => {
-                    if (!c.name) return;
-                    const chip = document.createElement('div');
-                    chip.className = 'category-chip';
-                    chip.dataset.cat = c.name;
-                    chip.textContent = c.name;
-                    container.appendChild(chip);
-                });
-                bindChips();
-            })
-            .catch(() => bindChips());
+
     </script>
 </body>
 
