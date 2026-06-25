@@ -80,6 +80,7 @@
     <footer id="foot"> &copy; 2026 JV-Parts &mdash; Alle rechten voorbehouden </footer>
     <div id="toast"></div>
     <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+    <script src="js/cart.js"></script>
     <script>
 
         if (window.netlifyIdentity) {
@@ -109,6 +110,7 @@
                 const imgContent = p.image
                     ? `<img src="${p.image}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;">`
                     : placeholderSVG;
+                const pid = slugify(p.name);
                 grid.innerHTML += `
                 <div class="product-card">
                     <div class="product-img">${imgContent}</div>
@@ -117,7 +119,13 @@
                         <div class="product-sub">${p.subtitle}</div>
                         <div class="product-footer">
                             <span class="product-price">€ ${p.price}</span>
-                            <button class="btn-add" onclick="addToCart(this, '${p.name.replace(/'/g, "\\'")}')">+ Voeg toe</button>
+                            <button class="btn-add"
+                                data-id="${pid}"
+                                data-name="${p.name.replace(/"/g,'&quot;')}"
+                                data-subtitle="${(p.subtitle||'').replace(/"/g,'&quot;')}"
+                                data-price="${p.price}"
+                                data-image="${p.image||''}"
+                                onclick="addProduct(this)">+ Voeg toe</button>
                         </div>
                     </div>
                 </div>`;
@@ -158,15 +166,6 @@
         overlay.addEventListener('click', closeSidebar);
 
 
-        let cartCount = 0;
-        const countTop = document.getElementById('cart-count-top');
-        const countSidebar = document.getElementById('cart-count-sidebar');
-
-        function updateCartUI() {
-            countTop.textContent = cartCount;
-            countSidebar.textContent = cartCount;
-        }
-
         function showToast(msg) {
             const toast = document.getElementById('toast');
             toast.textContent = msg;
@@ -175,10 +174,22 @@
             toast._timer = setTimeout(() => toast.classList.remove('show'), 2500);
         }
 
-        function addToCart(btn, name) {
-            cartCount++;
-            updateCartUI();
-            showToast(`✓ ${name} toegevoegd aan winkelmand`);
+        function addProduct(btn) {
+            const product = {
+                id:       btn.dataset.id,
+                name:     btn.dataset.name,
+                subtitle: btn.dataset.subtitle,
+                price:    btn.dataset.price,
+                image:    btn.dataset.image,
+            };
+            voegToeAanWinkelmand(product);
+            showToast('✓ ' + product.name + ' toegevoegd aan winkelmand');
+
+            /* korte visuele bevestiging op de knop */
+            const origineel = btn.textContent;
+            btn.textContent = '✓ Toegevoegd';
+            btn.disabled = true;
+            setTimeout(() => { btn.textContent = origineel; btn.disabled = false; }, 1200);
         }
 
 

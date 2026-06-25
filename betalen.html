@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="nl">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="/images/favicon.ico" sizes="any">
+    <link rel="icon" type="image/svg+xml" href="/images/jv-parts-tab.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JV-Parts &mdash; Betalen</title>
+    <style>
+        .checkout-layout {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 28px 20px 60px;
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 24px;
+            align-items: start;
+        }
+
+        .checkout-form-card {
+            background: var(--card-bg);
+            border: 1px solid var(--gold);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .checkout-form-header {
+            padding: 22px 28px 18px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .checkout-form-header h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin: 0;
+        }
+
+        .checkout-form-body {
+            padding: 24px 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .betaal-methode {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 14px 18px;
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: border-color .15s, background .15s;
+            user-select: none;
+        }
+
+        .betaal-methode:hover {
+            border-color: var(--gold);
+        }
+
+        .betaal-methode.geselecteerd {
+            border-color: var(--accent);
+            border-width: 2px;
+            background: #f5f7fb;
+        }
+
+        .betaal-methode input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .methode-logo {
+            width: 52px;
+            height: 34px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .7rem;
+            font-weight: 800;
+            flex-shrink: 0;
+            letter-spacing: .3px;
+        }
+
+        .methode-logo.bancontact {
+            background: #005498;
+            color: #fff;
+        }
+
+        .methode-logo.ideal {
+            background: #cc0066;
+            color: #fff;
+        }
+
+        .methode-logo.visa {
+            background: #1a1f71;
+            color: #fff;
+        }
+
+        .methode-logo.paypal {
+            background: #003087;
+            color: #fff;
+        }
+
+        .methode-logo.belfius {
+            background: #e3051b;
+            color: #fff;
+        }
+
+        .methode-logo.kbc {
+            background: #1e7538;
+            color: #fff;
+        }
+
+        .methode-logo.applepay {
+            background: #000;
+            color: #fff;
+        }
+
+        .methode-info {
+            flex: 1;
+        }
+
+        .methode-naam {
+            font-size: .95rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .methode-sub {
+            font-size: .78rem;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+
+        .methode-radio {
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--border);
+            border-radius: 50%;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: border-color .15s;
+        }
+
+        .betaal-methode.geselecteerd .methode-radio {
+            border-color: var(--accent);
+        }
+
+        .methode-radio::after {
+            content: '';
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent);
+            display: none;
+        }
+
+        .betaal-methode.geselecteerd .methode-radio::after {
+            display: block;
+        }
+
+        .card-fields {
+            display: none;
+            flex-direction: column;
+            gap: 14px;
+            margin-top: 14px;
+            padding: 18px;
+            background: var(--page-bg);
+            border-radius: 10px;
+        }
+
+        .card-fields.zichtbaar {
+            display: flex;
+        }
+
+        .form-field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-field label {
+            font-size: .8rem;
+            font-weight: 600;
+            color: var(--dark);
+            text-transform: uppercase;
+            letter-spacing: .4px;
+        }
+
+        .form-field input {
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: .95rem;
+            font-family: inherit;
+            color: var(--dark);
+            background: #fff;
+            outline: none;
+            transition: border-color .2s;
+        }
+
+        .form-field input:focus {
+            border-color: var(--gold);
+        }
+
+        .card-row {
+            display: grid;
+            grid-template-columns: 1fr 100px;
+            gap: 14px;
+        }
+
+        .veilig-banner {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 18px;
+            background: var(--success-bg);
+            border: 1px solid #b6dfc9;
+            border-radius: 10px;
+            font-size: .82rem;
+            color: var(--success);
+            font-weight: 500;
+            margin-top: 4px;
+        }
+
+        .mollie-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 16px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: .78rem;
+            color: var(--muted);
+            margin-top: 8px;
+        }
+
+        .mollie-badge strong {
+            color: var(--dark);
+        }
+
+        .checkout-summary {
+            position: sticky;
+            top: calc(var(--header-h) + 16px);
+        }
+
+        .checkout-summary .card-body {
+            gap: 0;
+            padding: 20px;
+        }
+
+        .summary-items {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .summary-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .summary-item-img {
+            width: 44px;
+            height: 44px;
+            border-radius: 8px;
+            background: repeating-linear-gradient(45deg, #f1f2f4 0 6px, #eef0f2 6px 12px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            color: #ccc;
+        }
+
+        .summary-item-name {
+            flex: 1;
+            font-size: .85rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .summary-item-sub {
+            font-size: .75rem;
+            color: var(--muted);
+        }
+
+        .summary-item-price {
+            font-size: .9rem;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .summary-divider-top {
+            height: 1px;
+            background: var(--border);
+            margin-bottom: 14px;
+        }
+
+        .btn-betaal {
+            display: block;
+            width: 100%;
+            text-align: center;
+            margin-top: 16px;
+            padding: 13px 20px;
+            background: var(--success);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background .2s, transform .1s;
+        }
+
+        .btn-betaal:hover {
+            background: #26784f;
+            transform: translateY(-1px);
+        }
+
+        .btn-betaal:active {
+            transform: translateY(0);
+        }
+
+        .gegevens-check {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            padding: 14px 16px;
+            background: var(--page-bg);
+            border-radius: 10px;
+            font-size: .82rem;
+            color: var(--dark);
+            margin-top: 2px;
+        }
+
+        .gegevens-check-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .gegevens-check-label {
+            color: var(--muted);
+            min-width: 80px;
+        }
+
+        .gegevens-check-link {
+            font-size: .75rem;
+            color: var(--gold-deep);
+            text-decoration: none;
+            margin-top: 8px;
+            display: inline-block;
+        }
+
+        .gegevens-check-link:hover {
+            text-decoration: underline;
+        }
+
+        .stappen {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 18px 20px 0;
+            max-width: 1100px;
+            margin: 0 auto;
+            font-size: .85rem;
+        }
+
+        .stap {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .pijl {
+            color: #ccc;
+            font-size: 1.1rem;
+        }
+
+        .stap-nummer.voltooid {
+            background: var(--success);
+            color: #fff;
+        }
+
+        .stap-label.voltooid {
+            color: var(--success);
+        }
+
+        .stap-label.inactief {
+            color: #bbb;
+        }
+
+        .stap-link {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .stap-link:hover .stap-label.voltooid {
+            text-decoration: underline;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .spinner {
+            display: none;
+            width: 18px;
+            height: 18px;
+            border: 2.5px solid rgba(255, 255, 255, .4);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin .7s linear infinite;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 760px) {
+            .checkout-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .checkout-summary {
+                position: static;
+                order: -1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="overlay"></div>
+    <aside id="sidebar">
+        <div class="sidebar-logo">JV<span>Parts</span></div>
+        <nav>
+            <a href="index.html">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z" />
+                    <path d="M9 21V12h6v9" />
+                </svg> Homepagina </a>
+            <a href="gegevens.html">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <circle cx="12" cy="8" r="4" />
+                    <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+                </svg> Account </a>
+            <a href="contact.html">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                </svg> Contact </a>
+            <a href="winkelmand.html" id="sidebar-cart-link">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <circle cx="9" cy="21" r="1" />
+                    <circle cx="20" cy="21" r="1" />
+                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+                </svg> Winkelmand <span class="cart-badge" id="cart-count-sidebar">0</span>
+            </a>
+        </nav>
+        <div class="sidebar-close" id="sidebar-close">&#10005; &nbsp;Sluit menu</div>
+    </aside>
+    <header id="topbar">
+        <button id="hamburger" aria-label="Menu openen">
+            <span></span><span></span><span></span>
+        </button>
+        <div class="topbar-brand">JV Parts</div>
+        <div class="topbar-search">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            <input type="text" placeholder="Zoek onderdelen...">
+        </div>
+        <a href="winkelmand.html" class="topbar-cart" aria-label="Winkelmand">
+            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <circle cx="9" cy="21" r="1" />
+                <circle cx="20" cy="21" r="1" />
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+            </svg>
+            <span class="dot" id="cart-count-top">0</span>
+        </a>
+    </header>
+    <!-- Stappen -->
+    <div class="stappen">
+        <span class="stap">
+            <a class="stap-link" href="winkelmand.html">
+                <span class="stap-nummer voltooid">&#10003;</span>
+                <span class="stap-label voltooid">winkelmand</span>
+            </a>
+        </span>
+        <span class="pijl">›</span>
+        <span class="stap">
+            <a class="stap-link" href="checkout.html">
+                <span class="stap-nummer voltooid">&#10003;</span>
+                <span class="stap-label voltooid">gegevens</span>
+            </a>
+        </span>
+        <span class="pijl">›</span>
+        <span class="stap">
+            <span class="stap-nummer actief">3</span>
+            <span class="stap-label actief">betalen</span>
+        </span>
+        <span class="pijl">›</span>
+        <span class="stap">
+            <span class="stap-nummer inactief">4</span>
+            <span class="stap-label inactief">klaar</span>
+        </span>
+    </div>
+    <div class="checkout-layout">
+        <div style="display:flex;flex-direction:column;gap:20px;">
+            <div class="checkout-form-card">
+                <div class="checkout-form-header">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <rect x="1" y="4" width="22" height="16" rx="2" />
+                        <line x1="1" y1="10" x2="23" y2="10" />
+                    </svg>
+                    <h3>Betaalmethode</h3>
+                </div>
+                <div class="checkout-form-body">
+                    <label class="betaal-methode geselecteerd" onclick="selecteer(this, 'bancontact')">
+                        <input type="radio" name="methode" value="bancontact" checked>
+                        <div class="methode-logo bancontact">BC</div>
+                        <div class="methode-info">
+                            <div class="methode-naam">Bancontact</div>
+                            <div class="methode-sub">Betaal met je Belgische bankkaart</div>
+                        </div>
+                        <div class="methode-radio"></div>
+                    </label>
+                    <label class="betaal-methode" onclick="selecteer(this, 'ideal')">
+                        <input type="radio" name="methode" value="ideal">
+                        <div class="methode-logo ideal">iD</div>
+                        <div class="methode-info">
+                            <div class="methode-naam">iDEAL</div>
+                            <div class="methode-sub">Betaal via je Nederlandse bank</div>
+                        </div>
+                        <div class="methode-radio"></div>
+                    </label>
+                    <label class="betaal-methode" onclick="selecteer(this, 'creditcard')">
+                        <input type="radio" name="methode" value="creditcard">
+                        <div class="methode-logo visa">VISA</div>
+                        <div class="methode-info">
+                            <div class="methode-naam">Creditcard</div>
+                            <div class="methode-sub">Visa &amp; Mastercard</div>
+                        </div>
+                        <div class="methode-radio"></div>
+                    </label>
+                    <div class="card-fields" id="card-fields">
+                        <div class="form-field">
+                            <label for="kaart-nummer">Kaartnummer</label>
+                            <input type="text" id="kaart-nummer" placeholder="1234 5678 9012 3456" maxlength="19"
+                                   oninput="formatKaart(this)">
+                        </div>
+                        <div class="form-field">
+                            <label for="kaart-naam">Naam op kaart</label>
+                            <input type="text" id="kaart-naam" placeholder="Jan Janssen">
+                        </div>
+                        <div class="card-row">
+                            <div class="form-field">
+                                <label for="kaart-datum">Vervaldatum</label>
+                                <input type="text" id="kaart-datum" placeholder="MM/JJ" maxlength="5"
+                                       oninput="formatDatum(this)">
+                            </div>
+                            <div class="form-field">
+                                <label for="kaart-cvv">CVV</label>
+                                <input type="text" id="kaart-cvv" placeholder="123" maxlength="4">
+                            </div>
+                        </div>
+                    </div>
+                    <label class="betaal-methode" onclick="selecteer(this, 'paypal')">
+                        <input type="radio" name="methode" value="paypal">
+                        <div class="methode-logo paypal">PP</div>
+                        <div class="methode-info">
+                            <div class="methode-naam">PayPal</div>
+                            <div class="methode-sub">Betaal via je PayPal-account</div>
+                        </div>
+                        <div class="methode-radio"></div>
+                    </label>
+                    <label class="betaal-methode" onclick="selecteer(this, 'belfius')">
+                        <input type="radio" name="methode" value="belfius">
+                        <div class="methode-logo belfius">BEL</div>
+                        <div class="methode-info">
+                            <div class="methode-naam">Belfius</div>
+                            <div class="methode-sub">Belfius Pay &amp; Easy</div>
+                        </div>
+                        <div class="methode-radio"></div>
+                    </label>
+                    <label class="betaal-methode" onclick="selecteer(this, 'kbc')">
+                        <input type="radio" name="methode" value="kbc">
+                        <div class="methode-logo kbc">KBC</div>
+                        <div class="methode-info">
+                            <div class="methode-naam">KBC/CBC</div>
+                            <div class="methode-sub">KBC/CBC Payment Button</div>
+                        </div>
+                        <div class="methode-radio"></div>
+                    </label>
+                    <div class="veilig-banner">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
+                             viewBox="0 0 24 24">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                        </svg> Alle betalingen worden veilig verwerkt via Mollie
+                    </div>
+                    <div class="mollie-badge">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"
+                             viewBox="0 0 24 24">
+                            <rect x="1" y="4" width="22" height="16" rx="2" />
+                            <line x1="1" y1="10" x2="23" y2="10" />
+                        </svg> Betaalverwerking door <strong>&nbsp;Mollie B.V.</strong>&nbsp;&mdash; PCI-DSS
+                        gecertificeerd
+                    </div>
+                </div>
+            </div>
+            <div class="checkout-form-card">
+                <div class="checkout-form-header">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <circle cx="12" cy="8" r="4" />
+                        <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+                    </svg>
+                    <h3>Jouw gegevens</h3>
+                </div>
+                <div class="checkout-form-body" style="padding-top:18px;padding-bottom:18px;">
+                    <div class="gegevens-check">
+                        <div class="gegevens-check-row">
+                            <span class="gegevens-check-label">Naam</span>
+                            <span id="check-naam">Jan Janssen</span>
+                        </div>
+                        <div class="gegevens-check-row">
+                            <span class="gegevens-check-label">E-mail</span>
+                            <span id="check-email">jan@example.com</span>
+                        </div>
+                        <div class="gegevens-check-row">
+                            <span class="gegevens-check-label">Adres</span>
+                            <span id="check-adres">Kerkstraat 42, 9000 Gent</span>
+                        </div>
+                        <a href="checkout.html" class="gegevens-check-link">&#9998; Gegevens aanpassen</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <aside class="checkout-summary card">
+            <div class="card-body">
+                <h5 class="cart-summary-title">Samenvatting</h5>
+                <div class="summary-items" id="bt-summary-items"></div>
+                <div class="summary-divider-top"></div>
+                <div class="summary-row">
+                    <span>Subtotaal</span>
+                    <span id="bt-subtotaal">&euro;&nbsp;0,00</span>
+                </div>
+                <div class="summary-row">
+                    <span>Verzending</span>
+                    <span id="bt-verzending">&euro;&nbsp;4,95</span>
+                </div>
+                <div class="summary-divider"></div>
+                <div class="summary-row summary-total">
+                    <span>Totaal</span>
+                    <span id="bt-totaal">&euro;&nbsp;0,00</span>
+                </div>
+                <button class="btn-betaal" id="betaal-knop" onclick="startBetaling()">
+                    <span id="betaal-tekst">Nu betalen</span>
+                    <div class="spinner" id="betaal-spinner"></div>
+                </button>
+                <a href="checkout.html" class="cart-continue">&#8592; Terug naar gegevens</a>
+            </div>
+        </aside>
+    </div>
+    <footer id="foot">&copy; 2026 <span>JV-Parts</span> &mdash; Alle rechten voorbehouden</footer>
+    <div id="toast"></div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/cart.js"></script>
+    <script>
+
+        (function () {
+            renderSamenvatting({ itemsId: 'bt-summary-items', subtotaalId: 'bt-subtotaal', verzendingId: 'bt-verzending', totaalId: 'bt-totaal' });
+            const cart = getCart();
+            const sub = cart.reduce((s, i) => s + parsePrice(i.price) * i.qty, 0);
+            const totaal = sub + getVerzendingPrijs();
+            document.getElementById('betaal-tekst').textContent = 'Nu betalen — € ' + totaal.toFixed(2).replace('.', ',');
+        })();
+
+
+        (function () {
+            const opgeslagen = localStorage.getItem('jvparts_checkout');
+            if (!opgeslagen) return;
+            const d = JSON.parse(opgeslagen);
+
+            const naam = [d.voornaam, d.achternaam].filter(Boolean).join(' ');
+            const adres = [
+                [d.straat, d.huisnr].filter(Boolean).join(' '),
+                [d.postcode, d.gemeente].filter(Boolean).join(' ')
+            ].filter(Boolean).join(', ');
+
+            if (naam) document.getElementById('check-naam').textContent = naam;
+            if (d.email) document.getElementById('check-email').textContent = d.email;
+            if (adres) document.getElementById('check-adres').textContent = adres;
+        })();
+
+
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+        const hamburger = document.getElementById('hamburger');
+        const sidebarClose = document.getElementById('sidebar-close');
+
+        hamburger.addEventListener('click', () => {
+            sidebar.classList.add('open');
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+        sidebarClose.addEventListener('click', sluitSidebar);
+        overlay.addEventListener('click', sluitSidebar);
+
+        function sluitSidebar() {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.classList.add('show');
+            clearTimeout(toast._timer);
+            toast._timer = setTimeout(() => toast.classList.remove('show'), 2800);
+        }
+
+
+        let huidigeMethode = 'bancontact';
+
+        function selecteer(label, methode) {
+            document.querySelectorAll('.betaal-methode').forEach(el => el.classList.remove('geselecteerd'));
+            label.classList.add('geselecteerd');
+            label.querySelector('input').checked = true;
+            huidigeMethode = methode;
+
+            const cardFields = document.getElementById('card-fields');
+            if (methode === 'creditcard') {
+                cardFields.classList.add('zichtbaar');
+
+                label.after(cardFields);
+            } else {
+                cardFields.classList.remove('zichtbaar');
+            }
+        }
+
+
+        function formatKaart(input) {
+            let val = input.value.replace(/\D/g, '').substring(0, 16);
+            input.value = val.replace(/(.{4})/g, '$1 ').trim();
+        }
+
+        function formatDatum(input) {
+            let val = input.value.replace(/\D/g, '').substring(0, 4);
+            if (val.length >= 3) val = val.substring(0, 2) + '/' + val.substring(2);
+            input.value = val;
+        }
+
+
+        function startBetaling() {
+
+            if (huidigeMethode === 'creditcard') {
+                const nr = document.getElementById('kaart-nummer').value.replace(/\s/g, '');
+                const naam = document.getElementById('kaart-naam').value.trim();
+                const dat = document.getElementById('kaart-datum').value;
+                const cvv = document.getElementById('kaart-cvv').value.trim();
+
+                if (nr.length < 16) { showToast('Vul een geldig kaartnummer in.'); return; }
+                if (!naam) { showToast('Vul de naam op de kaart in.'); return; }
+                if (dat.length < 5) { showToast('Vul een geldige vervaldatum in.'); return; }
+                if (cvv.length < 3) { showToast('Vul een geldige CVV in.'); return; }
+            }
+
+
+            const knop = document.getElementById('betaal-knop');
+            const tekst = document.getElementById('betaal-tekst');
+            const spinner = document.getElementById('betaal-spinner');
+
+            knop.disabled = true;
+            tekst.style.display = 'none';
+            spinner.style.display = 'block';
+
+            /*
+             * MOLLIE INTEGRATIE
+             * Hier stuur je een POST naar jouw backend, bv:
+             *   POST /api/betaling/aanmaken
+             *   body: { methode: huidigeMethode, bedrag: 57.90 }
+             *
+             * De backend maakt via de Mollie API een betaling aan en
+             * geeft een checkoutUrl terug waarnaar je de gebruiker
+             * doorstuurt:
+             *   window.location.href = data.checkoutUrl;
+             *
+             * Na betaling stuurt Mollie de gebruiker terug naar de
+             * redirectUrl die je instelde (bv. /klaar.html).
+             */
+
+            /* tijdelijk: simuleer redirect na 1,5s */
+            setTimeout(() => {
+                window.location.href = 'klaar.html';
+            }, 1500);
+        }
+    </script>
+</body>
+
+</html>
