@@ -154,58 +154,10 @@
             <p style="font-size:.72rem;color:var(--muted);text-align:right;margin-top:6px;"> Kaart © OpenStreetMap </p>
         </div>
     </section>
-    <footer id="foot"> &copy; 2026 <span>JV-Parts</span>&mdash; Alle rechten voorbehouden </footer>
+    <footer id="foot"> &copy; 2026 <span>JV-Parts</span> Alle rechten voorbehouden </footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('overlay');
-        const hamburger = document.getElementById('hamburger');
-        const sidebarClose = document.getElementById('sidebar-close');
-
-        function openSidebar() {
-            sidebar.classList.add('open');
-            overlay.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeSidebar() {
-            sidebar.classList.remove('open');
-            overlay.classList.remove('active');
-            document.body.style.overflow = '';
-        }
-
-        hamburger.addEventListener('click', openSidebar);
-        sidebarClose.addEventListener('click', closeSidebar);
-        overlay.addEventListener('click', closeSidebar);
-
-        const knop = document.getElementById("landKnop");
-        const lijst = document.getElementById("landLijst");
-        const codeEl = document.getElementById("landCode");
-        const hidden = document.getElementById("landcode");
-
-
-        knop.addEventListener("click", function () {
-            lijst.classList.toggle("open");
-        });
-
-
-        lijst.querySelectorAll("li").forEach(function (li) {
-            li.addEventListener("click", function () {
-                const code = li.dataset.code;
-                codeEl.textContent = code;
-                hidden.value = code;
-                knop.querySelector("img").src = li.querySelector("img").src;
-                lijst.classList.remove("open");
-            });
-        });
-
-
-        document.addEventListener("click", function (e) {
-            if (!document.getElementById("landDropdown").contains(e.target)) {
-                lijst.classList.remove("open");
-            }
-        });
-    </script>
+    <script src="js/sidebar.js"></script>
+    <script src="js/contact.js"></script>
 </body>
 
 </html>

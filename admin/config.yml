@@ -20,7 +20,7 @@ collections:
             name: "products"
             widget: "list"
             label_singular: "Product"
-            summary: "{{fields.name}} — €{{fields.price}}"
+            summary: "{{fields.name}} €{{fields.price}}"
             add_to_top: true
             fields:
               - label: "Naam"
@@ -34,7 +34,7 @@ collections:
               - label: "Prijs"
                 name: "price"
                 widget: "string"
-                hint: "Alleen het bedrag, met komma. Bijv. 34,95 — het euroteken wordt automatisch getoond."
+                hint: "Alleen het bedrag, met komma. Bijv. 34,95 het euroteken wordt automatisch getoond."
                 pattern:
                   ['^\d+([.,]\d{1,2})?$', "Gebruik enkel cijfers, bijv. 34,95"]
               - label: "Categorie"

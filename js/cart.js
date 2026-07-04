@@ -77,7 +77,7 @@ function renderSamenvatting(opts) {
                 </div>
                 <div style="flex:1;min-width:0;">
                     <div class="summary-item-name">${item.name}</div>
-                    <div class="summary-item-sub">&times;${item.qty}${item.subtitle ? ' &mdash; ' + item.subtitle : ''}</div>
+                    <div class="summary-item-sub">&times;${item.qty}${item.subtitle ? ' ' + item.subtitle : ''}</div>
                 </div>
                 <div class="summary-item-price">&euro;&nbsp;${prijs.toFixed(2).replace('.', ',')}</div>
             </div>`;
@@ -105,6 +105,14 @@ function renderSamenvatting(opts) {
         }
     }
     if (totEl) totEl.textContent = '€ ' + fmt(totaal);
+}
+
+function showToast(msg) {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toast._timer);
+    toast._timer = setTimeout(() => toast.classList.remove('show'), 2800);
 }
 
 document.addEventListener('DOMContentLoaded', updateCartBadges);

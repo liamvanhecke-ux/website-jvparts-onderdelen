@@ -7,15 +7,15 @@
 :root {
     /* merk */
     --accent: #15243d;
-    /* navy — knoppen, links, accenten */
+    /* navy knoppen, links, accenten */
     --accent-light: #1d3050;
-    /* navy lichter — hover op navy */
+    /* navy lichter hover op navy */
     --dark: #1a1a2e;
-    /* donker — sidebar, hero, toast */
+    /* donker sidebar, hero, toast */
     --gold: #c9a55c;
-    /* goud — logo, accenten */
+    /* goud logo, accenten */
     --gold-deep: #b8893f;
-    /* goud dieper — hover/links */
+    /* goud dieper hover/links */
 
     /* neutraal */
     --page-bg: #f4f5f7;
@@ -1064,4 +1064,523 @@ form {
     .cart-item-price {
         margin-left: auto;
     }
+}
+
+/* ── STAPPEN (voortgang bestelproces) ── */
+.stappen {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 18px 20px 0;
+    max-width: 1100px;
+    margin: 0 auto;
+    font-size: .85rem;
+}
+
+.stap {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.stap-nummer.voltooid {
+    background: var(--success);
+    color: #fff;
+}
+
+.stap-label.voltooid {
+    color: var(--success);
+}
+
+.stap-label.inactief {
+    color: #bbb;
+}
+
+.stap-link {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+    color: inherit;
+}
+
+.stap-link:hover .stap-label.voltooid {
+    text-decoration: underline;
+}
+
+.pijl {
+    color: #ccc;
+    font-size: 1.1rem;
+}
+
+.stappen-groot {
+    font-size: 1.1rem;
+    gap: 12px;
+}
+
+.stappen-groot .stap-nummer {
+    width: 30px;
+    height: 30px;
+    font-size: 16px;
+}
+
+.stappen-groot .pijl {
+    font-size: 1.5rem;
+}
+
+/* ── CHECKOUT / BETALEN LAYOUT ── */
+.checkout-layout {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 28px 20px 60px;
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 24px;
+    align-items: start;
+}
+
+.checkout-form-card {
+    background: var(--card-bg);
+    border: 1px solid var(--gold);
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.checkout-form-header {
+    padding: 22px 28px 18px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.checkout-form-header h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--dark);
+    margin: 0;
+}
+
+.checkout-form-body {
+    padding: 24px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.checkout-form-body.gap-sm {
+    gap: 10px;
+}
+
+.checkout-summary {
+    position: sticky;
+    top: calc(var(--header-h) + 16px);
+}
+
+.checkout-summary .card-body {
+    gap: 0;
+    padding: 20px;
+}
+
+.summary-items {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.summary-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.summary-item-img {
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+    background: repeating-linear-gradient(45deg, #f1f2f4 0 6px, #eef0f2 6px 12px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: #ccc;
+}
+
+.summary-item-name {
+    flex: 1;
+    font-size: .85rem;
+    font-weight: 600;
+    color: var(--dark);
+}
+
+.summary-item-sub {
+    font-size: .75rem;
+    color: var(--muted);
+}
+
+.summary-item-price {
+    font-size: .9rem;
+    font-weight: 700;
+    color: var(--dark);
+}
+
+.summary-divider-top {
+    height: 1px;
+    background: var(--border);
+    margin-bottom: 14px;
+}
+
+@media (max-width: 760px) {
+    .checkout-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .checkout-summary {
+        position: static;
+        order: -1;
+    }
+}
+
+/* ── GEGEVENS FORMULIER (checkout.html) ── */
+.form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-field label {
+    font-size: .8rem;
+    font-weight: 600;
+    color: var(--dark);
+    text-transform: uppercase;
+    letter-spacing: .4px;
+}
+
+.form-field input,
+.form-field select,
+.form-field textarea {
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: .95rem;
+    font-family: inherit;
+    color: var(--dark);
+    background: #fff;
+    outline: none;
+    transition: border-color .2s;
+}
+
+.form-field input:focus,
+.form-field select:focus,
+.form-field textarea:focus {
+    border-color: var(--gold);
+}
+
+.form-field textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.form-field input.valid,
+.form-field select.valid {
+    border-color: var(--success);
+    background-image: url("data:image/svg+xml,%3Csvg width='14' height='14' fill='none' stroke='%232f8a5b' stroke-width='2.5' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 6L9 17l-5-5'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 36px;
+}
+
+.form-field input.invalid,
+.form-field select.invalid {
+    border-color: var(--danger);
+}
+
+.veld-feedback {
+    font-size: .75rem;
+    margin-top: 3px;
+    min-height: 14px;
+    display: block;
+    line-height: 1.3;
+}
+
+.veld-feedback.ok {
+    color: var(--success);
+}
+
+.veld-feedback.fout {
+    color: var(--danger);
+}
+
+.form-row-double {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.form-section-label {
+    font-size: .72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .8px;
+    color: var(--muted);
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 4px;
+}
+
+.straat-row {
+    display: grid;
+    grid-template-columns: 1fr 100px;
+    gap: 16px;
+}
+
+.btn-checkout-next {
+    display: block;
+    width: 100%;
+    text-align: center;
+    margin-top: 16px;
+    padding: 12px 20px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: .95rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background .2s;
+}
+
+.btn-checkout-next:hover {
+    background: var(--accent-light);
+    color: #fff;
+}
+
+@media (max-width: 760px) {
+
+    .form-row-double,
+    .straat-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ── BETAALMETHODE (betalen.html) ── */
+.betaal-methode {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 18px;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: border-color .15s, background .15s;
+    user-select: none;
+}
+
+.betaal-methode:hover {
+    border-color: var(--gold);
+}
+
+.betaal-methode.geselecteerd {
+    border-color: var(--accent);
+    border-width: 2px;
+    background: #f5f7fb;
+}
+
+.betaal-methode input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.methode-logo {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background: #fff;
+    border: 1px solid var(--border);
+    padding: 6px;
+    overflow: hidden;
+}
+
+.methode-logo img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.methode-info {
+    flex: 1;
+}
+
+.methode-naam {
+    font-size: .95rem;
+    font-weight: 600;
+    color: var(--dark);
+}
+
+.methode-sub {
+    font-size: .78rem;
+    color: var(--muted);
+    margin-top: 2px;
+}
+
+.methode-radio {
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--border);
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color .15s;
+}
+
+.betaal-methode.geselecteerd .methode-radio {
+    border-color: var(--accent);
+}
+
+.methode-radio::after {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    display: none;
+}
+
+.betaal-methode.geselecteerd .methode-radio::after {
+    display: block;
+}
+
+.card-fields {
+    display: none;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 14px;
+    padding: 18px;
+    background: var(--page-bg);
+    border-radius: 10px;
+}
+
+.card-fields.zichtbaar {
+    display: flex;
+}
+
+.card-row {
+    display: grid;
+    grid-template-columns: 1fr 100px;
+    gap: 14px;
+}
+
+.veilig-banner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 18px;
+    background: var(--success-bg);
+    border: 1px solid #b6dfc9;
+    border-radius: 10px;
+    font-size: .82rem;
+    color: var(--success);
+    font-weight: 500;
+    margin-top: 4px;
+}
+
+.mollie-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 16px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: .78rem;
+    color: var(--muted);
+    margin-top: 8px;
+}
+
+.mollie-badge strong {
+    color: var(--dark);
+}
+
+.btn-betaal {
+    display: block;
+    width: 100%;
+    text-align: center;
+    margin-top: 16px;
+    padding: 13px 20px;
+    background: var(--success);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background .2s, transform .1s;
+}
+
+.btn-betaal:hover {
+    background: #26784f;
+    transform: translateY(-1px);
+}
+
+.btn-betaal:active {
+    transform: translateY(0);
+}
+
+.gegevens-check {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 14px 16px;
+    background: var(--page-bg);
+    border-radius: 10px;
+    font-size: .82rem;
+    color: var(--dark);
+    margin-top: 2px;
+}
+
+.gegevens-check-row {
+    display: flex;
+    gap: 8px;
+}
+
+.gegevens-check-label {
+    color: var(--muted);
+    min-width: 80px;
+}
+
+.gegevens-check-link {
+    font-size: .75rem;
+    color: var(--gold-deep);
+    text-decoration: none;
+    margin-top: 8px;
+    display: inline-block;
+}
+
+.gegevens-check-link:hover {
+    text-decoration: underline;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.spinner {
+    display: none;
+    width: 18px;
+    height: 18px;
+    border: 2.5px solid rgba(255, 255, 255, .4);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin .7s linear infinite;
+    margin: 0 auto;
 }
