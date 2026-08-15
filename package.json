@@ -1,0 +1,9 @@
+{
+  "name": "website-jvparts-onderdelen",
+  "private": true,
+  "version": "1.0.0",
+  "description": "JV-Parts webshop met Stripe-betalingen via Netlify Functions",
+  "dependencies": {
+    "stripe": "^22.5.0"
+  }
+}

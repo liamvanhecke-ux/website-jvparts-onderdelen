@@ -3,10 +3,10 @@
 
 <head>
     <meta charset="UTF-8">
-    <link rel="icon" href="/images/favicon.ico" sizes="any">
-    <link rel="icon" type="image/svg+xml" href="/images/jv-parts-tab.svg">
-    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16.png">
+    <link rel="icon" href="images/favicon.ico" sizes="any">
+    <link rel="icon" type="image/svg+xml" href="images/jv-parts-tab.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16.png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -127,28 +127,6 @@
                         </div>
                         <div class="methode-radio"></div>
                     </label>
-                    <div class="card-fields" id="card-fields">
-                        <div class="form-field">
-                            <label for="kaart-nummer">Kaartnummer</label>
-                            <input type="text" id="kaart-nummer" placeholder="1234 5678 9012 3456" maxlength="19"
-                                   oninput="formatKaart(this)">
-                        </div>
-                        <div class="form-field">
-                            <label for="kaart-naam">Naam op kaart</label>
-                            <input type="text" id="kaart-naam" placeholder="Jan Janssen">
-                        </div>
-                        <div class="card-row">
-                            <div class="form-field">
-                                <label for="kaart-datum">Vervaldatum</label>
-                                <input type="text" id="kaart-datum" placeholder="MM/JJ" maxlength="5"
-                                       oninput="formatDatum(this)">
-                            </div>
-                            <div class="form-field">
-                                <label for="kaart-cvv">CVV</label>
-                                <input type="text" id="kaart-cvv" placeholder="123" maxlength="4">
-                            </div>
-                        </div>
-                    </div>
                     <label class="betaal-methode" onclick="selecteer(this, 'paypal')">
                         <input type="radio" name="methode" value="paypal">
                         <div class="methode-logo"><img src="images/paypal.png" alt="PayPal"></div>
@@ -158,36 +136,19 @@
                         </div>
                         <div class="methode-radio"></div>
                     </label>
-                    <label class="betaal-methode" onclick="selecteer(this, 'belfius')">
-                        <input type="radio" name="methode" value="belfius">
-                        <div class="methode-logo"><img src="images/belfiuspng.png" alt="Belfius"></div>
-                        <div class="methode-info">
-                            <div class="methode-naam">Belfius</div>
-                            <div class="methode-sub">Belfius Pay &amp; Easy</div>
-                        </div>
-                        <div class="methode-radio"></div>
-                    </label>
-                    <label class="betaal-methode" onclick="selecteer(this, 'kbc')">
-                        <input type="radio" name="methode" value="kbc">
-                        <div class="methode-logo"><img src="images/KBC.png" alt="KBC/CBC"></div>
-                        <div class="methode-info">
-                            <div class="methode-naam">KBC/CBC</div>
-                            <div class="methode-sub">KBC/CBC Payment Button</div>
-                        </div>
-                        <div class="methode-radio"></div>
-                    </label>
                     <div class="veilig-banner">
                         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
                              viewBox="0 0 24 24">
                             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                        </svg> Alle betalingen worden veilig verwerkt via Mollie
+                        </svg> Alle betalingen worden veilig verwerkt via Stripe. Je kaart- of bankgegevens
+                        vul je rechtstreeks bij Stripe in, wij zien of bewaren die nooit.
                     </div>
                     <div class="mollie-badge">
                         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"
                              viewBox="0 0 24 24">
                             <rect x="1" y="4" width="22" height="16" rx="2" />
                             <line x1="1" y1="10" x2="23" y2="10" />
-                        </svg> Betaalverwerking door <strong>&nbsp;Mollie B.V.</strong>&nbsp;PCI-DSS
+                        </svg> Betaalverwerking door <strong>&nbsp;Stripe</strong>&nbsp;PCI-DSS
                         gecertificeerd
                     </div>
                 </div>

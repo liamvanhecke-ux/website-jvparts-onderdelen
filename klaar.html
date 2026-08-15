@@ -7,10 +7,10 @@
     <link rel="icon" type="image/svg+xml" href="images/jv-parts-tab.svg">
     <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16.png">
-    <link rel="stylesheet" href="css/style.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JV-Parts</title>
+    <title>JV-Parts Bestelling</title>
 </head>
 
 <body>
@@ -18,7 +18,7 @@
     <aside id="sidebar">
         <div class="sidebar-logo">JV<span>Parts</span></div>
         <nav>
-            <a href="index.html" class="active">
+            <a href="index.html">
                 <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z" />
                     <path d="M9 21V12h6v9" />
@@ -40,7 +40,7 @@
                 </svg> Winkelmand <span class="cart-badge" id="cart-count-sidebar">0</span>
             </a>
         </nav>
-        <div class="sidebar-close" id="sidebar-close">✕ &nbsp;Sluit menu</div>
+        <div class="sidebar-close" id="sidebar-close">&#10005; &nbsp;Sluit menu</div>
     </aside>
     <header id="topbar">
         <button id="hamburger" aria-label="Menu openen">
@@ -63,26 +63,52 @@
             <span class="dot" id="cart-count-top">0</span>
         </a>
     </header>
-    <section class="hero">
-        <h1>Brom & Scooter<br><span>Onderdelen</span></h1>
-        <p>Originele en aftermarket onderdelen voor alle merken. Snel geleverd.</p>
-        <a href="#products" class="btn-primary">Bekijk assortiment</a>
-    </section>
-    <main id="main">
-        <div class="categories" id="category-chips">
-            <div class="category-chip active" id="products" data-cat="Alles">Alles</div>
+    <!-- Stappen -->
+    <div class="stappen stappen-groot">
+        <span class="stap">
+            <a class="stap-link" href="winkelmand.html">
+                <span class="stap-nummer voltooid">&#10003;</span>
+                <span class="stap-label voltooid">winkelmand</span>
+            </a>
+        </span>
+        <span class="pijl">›</span>
+        <span class="stap">
+            <a class="stap-link" href="checkout.html">
+                <span class="stap-nummer voltooid">&#10003;</span>
+                <span class="stap-label voltooid">gegevens</span>
+            </a>
+        </span>
+        <span class="pijl">›</span>
+        <span class="stap">
+            <a class="stap-link" href="betalen.html">
+                <span class="stap-nummer voltooid">&#10003;</span>
+                <span class="stap-label voltooid">betalen</span>
+            </a>
+        </span>
+        <span class="pijl">›</span>
+        <span class="stap">
+            <span class="stap-nummer actief">4</span>
+            <span class="stap-label actief">klaar</span>
+        </span>
+    </div>
+    <div class="checkout-layout" style="grid-template-columns:1fr;max-width:560px;margin:0 auto;">
+        <div class="checkout-form-card" style="text-align:center;padding:32px 24px;">
+            <div style="margin:0 auto 16px;width:56px;height:56px;border-radius:50%;background:var(--success-bg);display:flex;align-items:center;justify-content:center;">
+                <svg width="28" height="28" fill="none" stroke="var(--success)" stroke-width="2.5" viewBox="0 0 24 24">
+                    <polyline points="20 6 9 17 4 12" />
+                </svg>
+            </div>
+            <h3 id="klaar-status">Bestelling verwerken...</h3>
+            <div id="klaar-details" class="gegevens-check" style="margin-top:18px;text-align:left;"></div>
+            <a href="index.html" class="cart-continue" style="justify-content:center;margin-top:20px;">&#8592; Verder winkelen</a>
         </div>
-        <div class="section-title">Producten</div>
-        <div class="product-grid" id="product-grid">
-            <p id="products-loading" style="color:#888;grid-column:1/-1">Producten laden...</p>
-        </div>
-    </main>
-    <footer id="foot"> &copy; 2026 JV-Parts Alle rechten voorbehouden </footer>
+    </div>
+    <footer id="foot">&copy; 2026 <span>JV-Parts</span> Alle rechten voorbehouden</footer>
     <div id="toast"></div>
-    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/cart.js"></script>
     <script src="js/sidebar.js"></script>
-    <script src="js/index.js"></script>
+    <script src="js/klaar.js"></script>
 </body>
 
 </html>
