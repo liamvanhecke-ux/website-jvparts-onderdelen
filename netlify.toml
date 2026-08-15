@@ -1,6 +1,16 @@
 [build]
   publish = "."
-
+ 
 [functions]
   directory = "netlify/functions"
   node_bundler = "esbuild"
+ 
+# Voorkom dat de broncode van de functies rechtstreeks als tekstbestand
+# opvraagbaar is (bv. https://.../netlify/functions/create-checkout-session.js).
+# De echte functie-aanroepen lopen via /.netlify/functions/... en blijven werken.
+[[redirects]]
+  from = "/netlify/functions/*"
+  to = "/404.html"
+  status = 404
+  force = true
+ 
