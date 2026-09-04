@@ -1,10 +1,10 @@
 {
   "products": [
     {
-      "name": "iui",
+      "name": "test",
       "subtitle": "pi",
       "price": "54",
-      "category": "Remmen"
+      "category": "banden"
     },
     {
       "name": "cilinder 50cc",
