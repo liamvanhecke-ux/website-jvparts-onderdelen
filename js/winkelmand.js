@@ -67,14 +67,18 @@ function updateTotaal(cart) {
     const subtotaal = cart.reduce((s, i) => s + parsePrice(i.price) * i.qty, 0);
     const verzending = getVerzendPrijs();
     const totaal = subtotaal + verzending;
+    const btw = berekenBtw(totaal);
     const fmt = n => n.toFixed(2).replace('.', ',');
 
     document.getElementById('subtotaal').textContent = '€ ' + fmt(subtotaal);
     document.getElementById('totaal').textContent = '€ ' + fmt(totaal);
 
+    const btwEl = document.getElementById('summary-btw');
+    if (btwEl) btwEl.textContent = '€ ' + fmt(btw);
+
     const shipEl = document.getElementById('summary-shipping');
     if (verzending === 0) {
-        shipEl.textContent = 'Gratis';
+        shipEl.textContent = t('cart.free');
         shipEl.style.color = 'var(--success)';
         shipEl.style.fontWeight = '600';
     } else {
@@ -83,6 +87,8 @@ function updateTotaal(cart) {
         shipEl.style.fontWeight = '';
     }
 }
+
+document.addEventListener('taalGewijzigd', () => renderWinkelmand());
 
 function changeQty(id, delta) {
     const cart = getCart();

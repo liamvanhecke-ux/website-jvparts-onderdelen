@@ -27,10 +27,30 @@ collections:
                 name: "name"
                 widget: "string"
                 hint: "Bijv. Cilinderset 50cc"
+              - label: "Naam (Frans)"
+                name: "name_fr"
+                widget: "string"
+                required: false
+                hint: "Optioneel. Wordt getoond aan bezoekers die de site in het Frans bekijken. Leeg = de Nederlandse naam wordt getoond."
+              - label: "Naam (Duits)"
+                name: "name_de"
+                widget: "string"
+                required: false
+                hint: "Optioneel. Wordt getoond aan bezoekers die de site in het Duits bekijken. Leeg = de Nederlandse naam wordt getoond."
               - label: "Merk / Subtitel"
                 name: "subtitle"
                 widget: "string"
                 hint: "Bijv. Honda / Peugeot of Universeel"
+              - label: "Merk / Subtitel (Frans)"
+                name: "subtitle_fr"
+                widget: "string"
+                required: false
+                hint: "Optioneel. Leeg = de Nederlandse tekst wordt getoond."
+              - label: "Merk / Subtitel (Duits)"
+                name: "subtitle_de"
+                widget: "string"
+                required: false
+                hint: "Optioneel. Leeg = de Nederlandse tekst wordt getoond."
               - label: "Prijs"
                 name: "price"
                 widget: "string"
@@ -46,6 +66,23 @@ collections:
                 display_fields: ["name"]
                 required: false
                 hint: "Begin te typen en kies een categorie uit de lijst. Een nieuwe nodig? Maak ze aan onder 'Categorieën' (links in het menu)."
+              - label: "Categorie (Frans)"
+                name: "category_fr"
+                widget: "string"
+                required: false
+                hint: "Optioneel. De vertaling van de categorienaam hierboven, voor de filterknop in het Frans. Leeg = de Nederlandse naam wordt getoond."
+              - label: "Categorie (Duits)"
+                name: "category_de"
+                widget: "string"
+                required: false
+                hint: "Optioneel. De vertaling van de categorienaam hierboven, voor de filterknop in het Duits. Leeg = de Nederlandse naam wordt getoond."
+              - label: "Staat"
+                name: "condition"
+                widget: "select"
+                options: ["Nieuw", "Tweedehands"]
+                default: "Nieuw"
+                required: false
+                hint: "Is dit onderdeel nieuw of tweedehands (occasie)? Verschijnt als filter op de site."
               - label: "Afbeelding"
                 name: "image"
                 widget: "image"

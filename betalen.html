@@ -22,39 +22,39 @@
                 <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z" />
                     <path d="M9 21V12h6v9" />
-                </svg> Homepagina </a>
-            <a href="gegevens.html">
-                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <circle cx="12" cy="8" r="4" />
-                    <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
-                </svg> Account </a>
+                </svg> <span data-i18n="nav.home">Homepagina</span> </a>
             <a href="contact.html">
                 <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                </svg> Contact </a>
+                </svg> <span data-i18n="nav.contact">Contact</span> </a>
             <a href="winkelmand.html" id="sidebar-cart-link">
                 <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <circle cx="9" cy="21" r="1" />
                     <circle cx="20" cy="21" r="1" />
                     <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
-                </svg> Winkelmand <span class="cart-badge" id="cart-count-sidebar">0</span>
+                </svg> <span data-i18n="nav.cart">Winkelmand</span> <span class="cart-badge" id="cart-count-sidebar">0</span>
             </a>
         </nav>
-        <div class="sidebar-close" id="sidebar-close">&#10005; &nbsp;Sluit menu</div>
+        <div class="sidebar-close" id="sidebar-close">&#10005; &nbsp;<span data-i18n="nav.closeMenu">Sluit menu</span></div>
     </aside>
     <header id="topbar">
         <button id="hamburger" aria-label="Menu openen">
             <span></span><span></span><span></span>
         </button>
-        <div class="topbar-brand">JV Parts</div>
+        <a href="index.html" class="topbar-brand">JV Parts</a>
         <div class="topbar-search">
             <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <circle cx="11" cy="11" r="8" />
                 <line x1="21" y1="21" x2="16.65" y2="16.65" />
             </svg>
-            <input type="text" placeholder="Zoek onderdelen...">
+            <input type="text" data-i18n-placeholder="common.searchPlaceholder" placeholder="Zoek onderdelen...">
         </div>
-        <a href="winkelmand.html" class="topbar-cart" aria-label="Winkelmand">
+        <div class="taal-switcher">
+            <button class="taal-knop" data-taal="nl">NL</button>
+            <button class="taal-knop" data-taal="fr">FR</button>
+            <button class="taal-knop" data-taal="de">DE</button>
+        </div>
+        <a href="winkelmand.html" class="topbar-cart" data-i18n-aria-label="nav.cart" aria-label="Winkelmand">
             <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <circle cx="9" cy="21" r="1" />
                 <circle cx="20" cy="21" r="1" />
@@ -68,25 +68,25 @@
         <span class="stap">
             <a class="stap-link" href="winkelmand.html">
                 <span class="stap-nummer voltooid">&#10003;</span>
-                <span class="stap-label voltooid">winkelmand</span>
+                <span class="stap-label voltooid" data-i18n="steps.cart">winkelmand</span>
             </a>
         </span>
         <span class="pijl">›</span>
         <span class="stap">
             <a class="stap-link" href="checkout.html">
                 <span class="stap-nummer voltooid">&#10003;</span>
-                <span class="stap-label voltooid">gegevens</span>
+                <span class="stap-label voltooid" data-i18n="steps.details">gegevens</span>
             </a>
         </span>
         <span class="pijl">›</span>
         <span class="stap">
             <span class="stap-nummer actief">3</span>
-            <span class="stap-label actief">betalen</span>
+            <span class="stap-label actief" data-i18n="steps.pay">betalen</span>
         </span>
         <span class="pijl">›</span>
         <span class="stap">
             <span class="stap-nummer inactief">4</span>
-            <span class="stap-label inactief">klaar</span>
+            <span class="stap-label inactief" data-i18n="steps.done">klaar</span>
         </span>
     </div>
     <div class="checkout-layout">
@@ -97,15 +97,15 @@
                         <rect x="1" y="4" width="22" height="16" rx="2" />
                         <line x1="1" y1="10" x2="23" y2="10" />
                     </svg>
-                    <h3>Betaalmethode</h3>
+                    <h3 data-i18n="betalen.paymentMethod">Betaalmethode</h3>
                 </div>
                 <div class="checkout-form-body gap-sm">
                     <label class="betaal-methode geselecteerd" onclick="selecteer(this, 'bancontact')">
                         <input type="radio" name="methode" value="bancontact" checked>
                         <div class="methode-logo"><img src="images/bancontact.png" alt="Bancontact"></div>
                         <div class="methode-info">
-                            <div class="methode-naam">Bancontact</div>
-                            <div class="methode-sub">Betaal met je Belgische bankkaart</div>
+                            <div class="methode-naam" data-i18n="betalen.bancontact">Bancontact</div>
+                            <div class="methode-sub" data-i18n="betalen.bancontactSub">Betaal met je Belgische bankkaart</div>
                         </div>
                         <div class="methode-radio"></div>
                     </label>
@@ -113,8 +113,8 @@
                         <input type="radio" name="methode" value="ideal">
                         <div class="methode-logo"><img src="images/idealpng.png" alt="iDEAL"></div>
                         <div class="methode-info">
-                            <div class="methode-naam">iDEAL</div>
-                            <div class="methode-sub">Betaal via je Nederlandse bank</div>
+                            <div class="methode-naam" data-i18n="betalen.ideal">iDEAL</div>
+                            <div class="methode-sub" data-i18n="betalen.idealSub">Betaal via je Nederlandse bank</div>
                         </div>
                         <div class="methode-radio"></div>
                     </label>
@@ -122,8 +122,8 @@
                         <input type="radio" name="methode" value="creditcard">
                         <div class="methode-logo"><img src="images/visa.png" alt="Visa"></div>
                         <div class="methode-info">
-                            <div class="methode-naam">Creditcard</div>
-                            <div class="methode-sub">Visa &amp; Mastercard</div>
+                            <div class="methode-naam" data-i18n="betalen.creditcard">Creditcard</div>
+                            <div class="methode-sub" data-i18n="betalen.creditcardSub">Visa &amp; Mastercard</div>
                         </div>
                         <div class="methode-radio"></div>
                     </label>
@@ -131,8 +131,8 @@
                         <input type="radio" name="methode" value="paypal">
                         <div class="methode-logo"><img src="images/paypal.png" alt="PayPal"></div>
                         <div class="methode-info">
-                            <div class="methode-naam">PayPal</div>
-                            <div class="methode-sub">Betaal via je PayPal-account</div>
+                            <div class="methode-naam" data-i18n="betalen.paypal">PayPal</div>
+                            <div class="methode-sub" data-i18n="betalen.paypalSub">Betaal via je PayPal-account</div>
                         </div>
                         <div class="methode-radio"></div>
                     </label>
@@ -140,16 +140,15 @@
                         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
                              viewBox="0 0 24 24">
                             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                        </svg> Alle betalingen worden veilig verwerkt via Stripe. Je kaart- of bankgegevens
-                        vul je rechtstreeks bij Stripe in, wij zien of bewaren die nooit.
+                        </svg> <span data-i18n="betalen.secureBanner">Alle betalingen worden veilig verwerkt via Stripe. Je kaart- of bankgegevens vul je
+                        rechtstreeks bij Stripe in, wij zien of bewaren die nooit.</span>
                     </div>
                     <div class="mollie-badge">
                         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"
                              viewBox="0 0 24 24">
                             <rect x="1" y="4" width="22" height="16" rx="2" />
                             <line x1="1" y1="10" x2="23" y2="10" />
-                        </svg> Betaalverwerking door <strong>&nbsp;Stripe</strong>&nbsp;PCI-DSS
-                        gecertificeerd
+                        </svg> <span data-i18n="betalen.processedBy">Betaalverwerking door</span> <strong>&nbsp;Stripe</strong>&nbsp;<span data-i18n="betalen.pciCert">PCI-DSS gecertificeerd</span>
                     </div>
                 </div>
             </div>
@@ -159,56 +158,61 @@
                         <circle cx="12" cy="8" r="4" />
                         <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
                     </svg>
-                    <h3>Jouw gegevens</h3>
+                    <h3 data-i18n="betalen.yourData">Jouw gegevens</h3>
                 </div>
                 <div class="checkout-form-body gap-sm" style="padding-top:18px;padding-bottom:18px;">
                     <div class="gegevens-check">
                         <div class="gegevens-check-row">
-                            <span class="gegevens-check-label">Naam</span>
+                            <span class="gegevens-check-label" data-i18n="betalen.name">Naam</span>
                             <span id="check-naam">Jan Janssen</span>
                         </div>
                         <div class="gegevens-check-row">
-                            <span class="gegevens-check-label">E-mail</span>
+                            <span class="gegevens-check-label" data-i18n="betalen.email">E-mail</span>
                             <span id="check-email">jan@example.com</span>
                         </div>
                         <div class="gegevens-check-row">
-                            <span class="gegevens-check-label">Adres</span>
+                            <span class="gegevens-check-label" data-i18n="betalen.address">Adres</span>
                             <span id="check-adres">Kerkstraat 42, 9000 Gent</span>
                         </div>
-                        <a href="checkout.html" class="gegevens-check-link">&#9998; Gegevens aanpassen</a>
+                        <a href="checkout.html" class="gegevens-check-link" data-i18n="betalen.editData">&#9998; Gegevens aanpassen</a>
                     </div>
                 </div>
             </div>
         </div>
         <aside class="checkout-summary card">
             <div class="card-body">
-                <h5 class="cart-summary-title">Samenvatting</h5>
+                <h5 class="cart-summary-title" data-i18n="cart.summary">Samenvatting</h5>
                 <div class="summary-items" id="bt-summary-items"></div>
                 <div class="summary-divider-top"></div>
                 <div class="summary-row">
-                    <span>Subtotaal</span>
+                    <span data-i18n="cart.subtotal">Subtotaal</span>
                     <span id="bt-subtotaal">&euro;&nbsp;0,00</span>
                 </div>
                 <div class="summary-row">
-                    <span>Verzending</span>
+                    <span data-i18n="cart.shipping">Verzending</span>
                     <span id="bt-verzending">&euro;&nbsp;4,95</span>
                 </div>
                 <div class="summary-divider"></div>
                 <div class="summary-row summary-total">
-                    <span>Totaal</span>
+                    <span data-i18n="cart.total">Totaal</span>
                     <span id="bt-totaal">&euro;&nbsp;0,00</span>
+                </div>
+                <div class="summary-btw-note">
+                    <span data-i18n="cart.btwNote">Incl. 21% btw</span>
+                    <span id="bt-btw">&euro;&nbsp;0,00</span>
                 </div>
                 <button class="btn-betaal" id="betaal-knop" onclick="startBetaling()">
                     <span id="betaal-tekst">Nu betalen</span>
                     <div class="spinner" id="betaal-spinner"></div>
                 </button>
-                <a href="checkout.html" class="cart-continue">&#8592; Terug naar gegevens</a>
+                <a href="checkout.html" class="cart-continue" data-i18n="betalen.backToDetails">&#8592; Terug naar gegevens</a>
             </div>
         </aside>
     </div>
-    <footer id="foot">&copy; 2026 <span>JV-Parts</span> Alle rechten voorbehouden</footer>
+    <footer id="foot">&copy; 2026 <span>JV-Parts</span> <span data-i18n="common.footer">Alle rechten voorbehouden</span></footer>
     <div id="toast"></div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/i18n.js"></script>
     <script src="js/cart.js"></script>
     <script src="js/sidebar.js"></script>
     <script src="js/betalen.js"></script>

@@ -4,6 +4,10 @@
     box-sizing: border-box;
 }
 
+html {
+    scrollbar-gutter: stable;
+}
+
 :root {
     /* merk */
     --accent: #15243d;
@@ -298,6 +302,7 @@ body {
     font-size: 1.1rem;
     font-weight: 700;
     color: var(--gold);
+    text-decoration: none;
 }
 
 .topbar-brand span {
@@ -333,6 +338,45 @@ body {
     color: #999;
 }
 
+.taal-switcher {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+}
+
+.taal-knop {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, .25);
+    color: rgba(255, 255, 255, .6);
+    font-size: .7rem;
+    font-weight: 700;
+    padding: 4px 7px;
+    border-radius: 6px;
+    cursor: pointer;
+    line-height: 1;
+    transition: background .15s, color .15s, border-color .15s;
+}
+
+.taal-knop:hover {
+    border-color: var(--gold);
+    color: #fff;
+}
+
+.taal-knop.actief {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: var(--accent);
+}
+
+/* Op erg smalle schermen is er geen plaats voor zoekbalk + taalknoppen +
+   winkelmandje naast elkaar. De zoekbalk werkt trouwens enkel op de
+   homepagina, dus die mag hier wijken. */
+@media (max-width: 430px) {
+    .topbar-search {
+        display: none;
+    }
+}
+
 .topbar-cart {
     position: relative;
     text-decoration: none;
@@ -357,6 +401,7 @@ body {
 
 /* ── MAIN ── */
 #main {
+    width: 100%;
     max-width: 1600px;
     margin: 0 auto;
     padding: 28px 24px 60px;
@@ -442,7 +487,7 @@ body {
 /* ── PRODUCT GRID ── */
 .product-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
     gap: 28px;
     margin-bottom: 48px;
 }
@@ -539,12 +584,15 @@ body {
 
 
 .product-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 2;
     display: inline-block;
     font-size: .72rem;
     font-weight: 600;
-    padding: 3px 9px;
-    border-radius: 6px;
-    margin-bottom: 9px;
+    padding: 4px 12px;
+    border-radius: 20px;
 }
 
 .product-badge.in {
@@ -562,10 +610,16 @@ body {
     background: var(--danger-bg);
 }
 
+.product-badge.used {
+    color: var(--amber);
+    background: var(--amber-bg);
+}
+
 .product-footer {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    flex-wrap: wrap;
     gap: 10px;
     margin-top: 18px;
     padding-top: 18px;
@@ -573,6 +627,7 @@ body {
 }
 
 .product-price {
+    flex-shrink: 0;
     font-size: 1.25rem;
     font-weight: 700;
     color: var(--dark);
@@ -583,6 +638,7 @@ body {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
     gap: 6px;
     background: var(--accent);
     color: #fff;
@@ -616,6 +672,9 @@ body {
 }
 
 .category-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
     padding: 8px 18px;
     border-radius: 20px;
     background: #fff;
@@ -634,6 +693,103 @@ body {
     border-color: var(--accent);
     background: var(--accent);
     color: var(--gold);
+}
+
+.chip-check {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    border: 1.5px solid #bbb;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background .2s, border-color .2s;
+}
+
+.chip-check::after {
+    content: '';
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #fff;
+    transform: scale(0);
+    transition: transform .18s cubic-bezier(.4, 0, .2, 1);
+}
+
+.category-chip.active .chip-check {
+    background: var(--gold);
+    border-color: var(--gold);
+}
+
+.category-chip.active .chip-check::after {
+    transform: scale(1);
+}
+
+/* ── SEGMENTED (schuivende toggle) ── */
+.segmented {
+    position: relative;
+    display: inline-flex;
+    background: #fff;
+    border: 1.5px solid #ddd;
+    border-radius: 20px;
+    padding: 3px;
+    margin-bottom: 32px;
+}
+
+.segmented-indicator {
+    position: absolute;
+    top: 3px;
+    bottom: 3px;
+    left: 3px;
+    width: calc(33.333% - 2px);
+    background: var(--accent);
+    border-radius: 17px;
+    transition: left .3s cubic-bezier(.4, 0, .2, 1), width .3s cubic-bezier(.4, 0, .2, 1);
+    z-index: 0;
+}
+
+.segmented-option {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    text-align: center;
+    padding: 8px 18px;
+    font-size: .85rem;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    color: var(--text);
+}
+
+/* Venster dat exact over de schuivende balk ligt en er een gouden kopie
+   van de tekst doorheen laat zien - zo volgt de kleur de balk op elk
+   moment van de animatie, in plaats van pas te wisselen na afloop. */
+.segmented-mask {
+    position: absolute;
+    top: 3px;
+    bottom: 3px;
+    left: 3px;
+    width: calc(33.333% - 2px);
+    overflow: hidden;
+    border-radius: 17px;
+    z-index: 2;
+    pointer-events: none;
+    transition: left .3s cubic-bezier(.4, 0, .2, 1), width .3s cubic-bezier(.4, 0, .2, 1);
+}
+
+.segmented-gold-row {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 3px;
+    display: flex;
+    transition: left .3s cubic-bezier(.4, 0, .2, 1);
+}
+
+.segmented-gold-row .segmented-option {
+    color: var(--gold);
+    cursor: default;
 }
 
 /* ── FOOTER ── */
@@ -681,6 +837,29 @@ footer {
     .product-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 12px;
+    }
+
+    .product-info {
+        padding: 14px 14px 16px;
+    }
+
+    .product-footer {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    .product-price {
+        font-size: 1.4rem;
+    }
+
+    .btn-add {
+        min-width: 0;
+        width: 100%;
+        padding: 14px 18px;
+        border-radius: 999px;
+        color: var(--gold);
+        font-size: .95rem;
     }
 }
 
@@ -939,6 +1118,14 @@ form {
     color: var(--dark);
 }
 
+.summary-btw-note {
+    display: flex;
+    justify-content: space-between;
+    font-size: .78rem;
+    color: var(--muted);
+    margin-top: -4px;
+}
+
 .cart-checkout-btn {
     width: 100%;
     text-align: center;
@@ -1128,13 +1315,35 @@ form {
     font-size: 1.5rem;
 }
 
+@media (max-width: 560px) {
+    .stappen-groot {
+        gap: 6px;
+        padding: 14px 12px 0;
+        justify-content: center;
+    }
+
+    .stappen-groot .stap-nummer {
+        width: 24px;
+        height: 24px;
+        font-size: 12px;
+    }
+
+    .stappen-groot .stap-label {
+        display: none;
+    }
+
+    .stappen-groot .pijl {
+        font-size: 1rem;
+    }
+}
+
 /* ── CHECKOUT / BETALEN LAYOUT ── */
 .checkout-layout {
     max-width: 1100px;
     margin: 0 auto;
     padding: 28px 20px 60px;
     display: grid;
-    grid-template-columns: 1fr 340px;
+    grid-template-columns: minmax(0, 1fr) 340px;
     gap: 24px;
     align-items: start;
 }
@@ -1233,7 +1442,7 @@ form {
 
 @media (max-width: 760px) {
     .checkout-layout {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
     }
 
     .checkout-summary {
@@ -1314,7 +1523,7 @@ form {
 
 .form-row-double {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: 16px;
 }
 
@@ -1331,7 +1540,7 @@ form {
 
 .straat-row {
     display: grid;
-    grid-template-columns: 1fr 100px;
+    grid-template-columns: minmax(0, 1fr) 100px;
     gap: 16px;
 }
 

@@ -2,6 +2,9 @@
 // Prijzen worden NOOIT vertrouwd vanuit de browser: we zoeken ze hier
 // opnieuw op in data/products.json, zodat een klant de prijs niet kan
 // manipuleren via de browserconsole of een aangepaste request.
+//
+// De prijzen in data/products.json en de verzendkosten zijn btw-inclusief
+// (de eindprijs die de klant betaalt), dus hier komt er niets meer bij.
 
 const Stripe = require('stripe');
 const producten = require('../../data/products.json').products;

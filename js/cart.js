@@ -27,6 +27,14 @@ function parsePrice(str) {
     return parseFloat(String(str).replace(',', '.')) || 0;
 }
 
+const BTW_PERCENTAGE = 21;
+
+/* Onze prijzen zijn btw-inclusief (verplicht voor consumentenprijzen),
+   dus dit haalt het reeds inbegrepen btw-bedrag uit een totaal. */
+function berekenBtw(totaalInclBtw) {
+    return totaalInclBtw - (totaalInclBtw / (1 + BTW_PERCENTAGE / 100));
+}
+
 function slugify(str) {
     return String(str).toLowerCase()
         .normalize('NFD').replace(/[̀-ͯ]/g, '')
@@ -86,16 +94,18 @@ function renderSamenvatting(opts) {
     const subtotaal  = cart.reduce((s, i) => s + parsePrice(i.price) * i.qty, 0);
     const verzending = getVerzendingPrijs();
     const totaal     = subtotaal + verzending;
+    const btw        = berekenBtw(totaal);
     const fmt = n => n.toFixed(2).replace('.', ',');
 
     const subEl  = document.getElementById(opts.subtotaalId);
     const verzEl = document.getElementById(opts.verzendingId);
     const totEl  = document.getElementById(opts.totaalId);
+    const btwEl  = opts.btwId && document.getElementById(opts.btwId);
 
     if (subEl) subEl.textContent = '€ ' + fmt(subtotaal);
     if (verzEl) {
         if (verzending === 0) {
-            verzEl.textContent    = 'Gratis';
+            verzEl.textContent    = t('cart.free');
             verzEl.style.color    = 'var(--success)';
             verzEl.style.fontWeight = '600';
         } else {
@@ -104,6 +114,7 @@ function renderSamenvatting(opts) {
             verzEl.style.fontWeight = '';
         }
     }
+    if (btwEl) btwEl.textContent = '€ ' + fmt(btw);
     if (totEl) totEl.textContent = '€ ' + fmt(totaal);
 }
 

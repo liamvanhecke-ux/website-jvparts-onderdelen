@@ -1,10 +1,12 @@
-(function () {
-    renderSamenvatting({ itemsId: 'bt-summary-items', subtotaalId: 'bt-subtotaal', verzendingId: 'bt-verzending', totaalId: 'bt-totaal' });
+function toonBetaalSamenvatting() {
+    renderSamenvatting({ itemsId: 'bt-summary-items', subtotaalId: 'bt-subtotaal', verzendingId: 'bt-verzending', totaalId: 'bt-totaal', btwId: 'bt-btw' });
     const cart = getCart();
     const sub = cart.reduce((s, i) => s + parsePrice(i.price) * i.qty, 0);
     const totaal = sub + getVerzendingPrijs();
-    document.getElementById('betaal-tekst').textContent = 'Nu betalen € ' + totaal.toFixed(2).replace('.', ',');
-})();
+    document.getElementById('betaal-tekst').textContent = t('betalen.payNow') + ' € ' + totaal.toFixed(2).replace('.', ',');
+}
+toonBetaalSamenvatting();
+document.addEventListener('taalGewijzigd', toonBetaalSamenvatting);
 
 (function () {
     const opgeslagen = localStorage.getItem('jvparts_checkout');
@@ -38,7 +40,7 @@ async function startBetaling() {
 
     const cart = getCart();
     if (cart.length === 0) {
-        showToast('Je winkelmand is leeg.');
+        showToast(t('betalen.emptyCart'));
         return;
     }
 
@@ -71,7 +73,7 @@ async function startBetaling() {
         window.location.href = data.url;
     } catch (err) {
         console.error(err);
-        showToast('Betaling starten is mislukt. Probeer opnieuw.');
+        showToast(t('betalen.startError'));
         knop.disabled = false;
         tekst.style.display = '';
         spinner.style.display = 'none';

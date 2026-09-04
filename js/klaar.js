@@ -8,8 +8,8 @@
     updateCartBadges();
 
     if (!sessionId) {
-        stateEl.textContent = 'Geen bestelling gevonden.';
-        detailEl.innerHTML = '<p style="color:var(--muted);">Er ontbreekt een bestelreferentie in de link.</p>';
+        stateEl.textContent = t('klaar.noOrder');
+        detailEl.innerHTML = `<p style="color:var(--muted);">${t('klaar.noOrderDetail')}</p>`;
         return;
     }
 
@@ -24,37 +24,36 @@
             localStorage.removeItem('jvparts_checkout');
             updateCartBadges();
 
-            stateEl.textContent = 'Bedankt voor je bestelling!';
+            stateEl.textContent = t('klaar.thanks');
 
             const bedrag = typeof data.bedrag === 'number' ? (data.bedrag / 100).toFixed(2).replace('.', ',') : '-';
 
             detailEl.innerHTML = `
                 <div class="gegevens-check-row">
-                    <span class="gegevens-check-label">Bedrag</span>
+                    <span class="gegevens-check-label">${t('klaar.amount')}</span>
                     <span>&euro;&nbsp;${bedrag}</span>
                 </div>
-                ${data.email ? `<div class="gegevens-check-row"><span class="gegevens-check-label">E-mail</span><span>${data.email}</span></div>` : ''}
+                ${data.email ? `<div class="gegevens-check-row"><span class="gegevens-check-label">${t('klaar.email')}</span><span>${data.email}</span></div>` : ''}
                 <div class="gegevens-check-row">
-                    <span class="gegevens-check-label">Referentie</span>
+                    <span class="gegevens-check-label">${t('klaar.reference')}</span>
                     <span>${sessionId.slice(-12)}</span>
                 </div>
                 <p style="margin-top:14px;color:var(--muted);font-size:.85rem;">
-                    Je ontvangt een bevestiging via Stripe. We nemen je bestelling zo snel mogelijk in verwerking.
+                    ${t('klaar.confirmationNote')}
                 </p>`;
         } else {
-            stateEl.textContent = 'Betaling niet voltooid';
+            stateEl.textContent = t('klaar.notCompleted');
             detailEl.innerHTML = `
                 <p style="color:var(--muted);">
-                    Je betaling is nog niet gelukt of nog in verwerking (status: ${data.status || 'onbekend'}).
-                    Je winkelmand is bewaard.
+                    ${t('klaar.notCompletedDetail', { status: data.status || 'onbekend' })}
                 </p>
                 <a href="betalen.html" class="btn-betaal" style="text-decoration:none;display:flex;align-items:center;justify-content:center;">
-                    Opnieuw proberen
+                    ${t('klaar.retry')}
                 </a>`;
         }
     } catch (err) {
         console.error(err);
-        stateEl.textContent = 'Er ging iets mis';
-        detailEl.innerHTML = '<p style="color:var(--muted);">Kon de status van je bestelling niet ophalen. Neem contact op als er wel geld werd afgeschreven.</p>';
+        stateEl.textContent = t('klaar.errorGeneric');
+        detailEl.innerHTML = `<p style="color:var(--muted);">${t('klaar.errorGenericDetail')}</p>`;
     }
 })();
