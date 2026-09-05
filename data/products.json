@@ -4,7 +4,8 @@
       "name": "test",
       "subtitle": "pi",
       "price": "54",
-      "category": "banden"
+      "category": "banden",
+      "image": "/images/products/img_8272.jpeg"
     },
     {
       "name": "cilinder 50cc",
