@@ -9,7 +9,7 @@
 # opvraagbaar is (bv. https://.../netlify/functions/create-checkout-session.js).
 # De echte functie-aanroepen lopen via /.netlify/functions/... en blijven werken.
 [[redirects]]
-  from = "/netlify/functions/*"
+  from = "/netlify/*"
   to = "/404.html"
   status = 404
   force = true

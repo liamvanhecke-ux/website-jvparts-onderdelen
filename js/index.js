@@ -40,9 +40,14 @@ function renderProducts(products) {
         const badge = p.condition === 'Tweedehands'
             ? `<div class="product-badge used">${t('index.badgeUsed')}</div>`
             : `<div class="product-badge in">${t('index.badgeNew')}</div>`;
+        const voorraad = voorraadInfo(p);
+        const uitverkocht = voorraad.aantal <= 0;
+        /* Enkel een extra label tonen als het iets zegt: bijna op of uitverkocht */
+        const voorraadBadge = voorraad.cls === 'in' ? ''
+            : `<div class="product-badge stock ${voorraad.cls}">${voorraad.label}</div>`;
         grid.innerHTML += `
-        <div class="product-card">
-            <div class="product-img">${imgContent}${badge}</div>
+        <div class="product-card" onclick="location.href='product.html?id=${pid}'">
+            <div class="product-img">${imgContent}${badge}${voorraadBadge}</div>
             <div class="product-info">
                 <div class="product-name">${naam}</div>
                 <div class="product-sub">${subtitel}</div>
@@ -54,21 +59,36 @@ function renderProducts(products) {
                         data-subtitle="${subtitel.replace(/"/g,'&quot;')}"
                         data-price="${p.price}"
                         data-image="${p.image||''}"
-                        onclick="addProduct(this)">${t('index.addToCart')}</button>
+                        data-max="${isFinite(voorraad.aantal) ? voorraad.aantal : ''}"
+                        ${uitverkocht ? 'disabled' : ''}
+                        onclick="event.stopPropagation(); addProduct(this)">${uitverkocht ? t('product.stockOut') : t('index.addToCart')}</button>
                 </div>
             </div>
         </div>`;
     });
 }
 
+/* Vult de zoekbalk en de filtering in op basis van ?zoek=... in de URL,
+   zodat een zoekopdracht vanaf een andere pagina hier meteen resultaat toont. */
+function pasZoekParamToe() {
+    const term = new URLSearchParams(location.search).get('zoek');
+    if (!term) return;
+    searchQuery = term;
+    const input = document.getElementById('search-input');
+    if (input) input.value = term;
+}
+
 fetch('/data/products.json')
     .then(r => r.json())
-    .then(data => {
-        allProducts = data.products || [];
-        renderProducts(allProducts);
+    .then(data => laadLiveVoorraad(data.products || []))
+    .then(producten => {
+        allProducts = producten;
         buildChips(allProducts);
+        buildFilterPanel(allProducts);
         bindConditionChips();
         bindSearch();
+        pasZoekParamToe();
+        applyFilters();
     })
     .catch(() => {
         document.getElementById('product-grid').innerHTML =
@@ -82,8 +102,12 @@ function addProduct(btn) {
         subtitle: btn.dataset.subtitle,
         price:    btn.dataset.price,
         image:    btn.dataset.image,
+        max:      btn.dataset.max,
     };
-    voegToeAanWinkelmand(product);
+    if (voegToeAanWinkelmand(product) === 0) {
+        showToast(t('product.maxStock'));
+        return;
+    }
     showToast('✓ ' + product.name + ' ' + t('index.toastAdded'));
 
     /* korte visuele bevestiging op de knop */
@@ -95,6 +119,7 @@ function addProduct(btn) {
 
 document.addEventListener('taalGewijzigd', () => {
     buildChips(allProducts);
+    buildFilterPanel(allProducts);
     applyFilters();
     const activeOpt = document.querySelector('#condition-chips .segmented-option.active');
     if (activeOpt) layoutConditionSegmented(activeOpt);
@@ -127,30 +152,99 @@ function bindSearch() {
     });
 }
 
+/* Gedeelde toggle-logica voor zowel de chips (desktop) als de checklist in
+   het filterpaneel (mobiel) — houdt selectedCategories in beide UI's sync. */
+function toggleCategory(cat) {
+    if (cat === 'Alles') {
+        selectedCategories.clear();
+    } else if (selectedCategories.has(cat)) {
+        selectedCategories.delete(cat);
+    } else {
+        selectedCategories.add(cat);
+    }
+    updateCategoryChipStates();
+    applyFilters();
+}
+
 function updateCategoryChipStates() {
     const isAlles = selectedCategories.size === 0;
     document.querySelectorAll('#category-chips .category-chip').forEach(chip => {
         const cat = chip.dataset.cat;
         chip.classList.toggle('active', cat === 'Alles' ? isAlles : selectedCategories.has(cat));
     });
+    document.querySelectorAll('#filter-panel-list input[type="checkbox"]').forEach(cb => {
+        cb.checked = cb.value === 'Alles' ? isAlles : selectedCategories.has(cb.value);
+    });
+    const countEl = document.getElementById('filter-count');
+    if (countEl) {
+        countEl.textContent = selectedCategories.size;
+        countEl.hidden = selectedCategories.size === 0;
+    }
 }
 
 function bindChips() {
     document.querySelectorAll('#category-chips .category-chip').forEach(chip => {
-        chip.onclick = () => {
-            const cat = chip.dataset.cat;
-            if (cat === 'Alles') {
-                selectedCategories.clear();
-            } else if (selectedCategories.has(cat)) {
-                selectedCategories.delete(cat);
-            } else {
-                selectedCategories.add(cat);
-            }
-            updateCategoryChipStates();
-            applyFilters();
-        };
+        chip.onclick = () => toggleCategory(chip.dataset.cat);
     });
 }
+
+/* Bouwt de mobiele "Filters"-checklist op, als alternatief voor de chips-rij
+   die op een telefoon oneindig zou kunnen doorgroeien naarmate er in admin
+   meer categorieën bijkomen. */
+function buildFilterPanel(products) {
+    const list = document.getElementById('filter-panel-list');
+    if (!list) return;
+    list.innerHTML = '';
+
+    function maakItem(cat, label) {
+        const item = document.createElement('label');
+        item.className = 'filter-panel-item';
+        const input = document.createElement('input');
+        input.type = 'checkbox';
+        input.value = cat;
+        input.addEventListener('change', () => toggleCategory(cat));
+        const span = document.createElement('span');
+        span.textContent = label;
+        item.appendChild(input);
+        item.appendChild(span);
+        return item;
+    }
+
+    list.appendChild(maakItem('Alles', t('index.catAll')));
+    const cats = [...new Set(products.map(p => p.category).filter(Boolean))]
+        .sort((a, b) => a.localeCompare(b, 'nl'));
+    cats.forEach(cat => list.appendChild(maakItem(cat, vertaalCategorie(cat, products))));
+
+    updateCategoryChipStates();
+}
+
+function bindFilterPanel() {
+    const trigger = document.getElementById('filter-trigger');
+    const panel = document.getElementById('filter-panel');
+    const overlay = document.getElementById('filter-overlay');
+    const closeBtn = document.getElementById('filter-panel-close');
+    const applyBtn = document.getElementById('filter-panel-apply');
+    if (!trigger || !panel || !overlay) return;
+
+    function openPanel() {
+        panel.classList.add('open');
+        overlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+    function closePanel() {
+        panel.classList.remove('open');
+        overlay.classList.remove('active');
+        if (!sidebar.classList.contains('open')) {
+            document.body.style.overflow = '';
+        }
+    }
+
+    trigger.addEventListener('click', openPanel);
+    overlay.addEventListener('click', closePanel);
+    closeBtn.addEventListener('click', closePanel);
+    applyBtn.addEventListener('click', closePanel);
+}
+bindFilterPanel();
 
 function layoutConditionSegmented(optionEl) {
     const container = document.getElementById('condition-chips');

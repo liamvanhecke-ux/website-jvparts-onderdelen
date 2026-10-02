@@ -14,7 +14,7 @@ collections:
       - name: "producten"
         label: "Producten beheren"
         file: "data/products.json"
-        description: "Voeg producten toe, pas ze aan, sleep om te herordenen of verwijder met de ✕. Rechts zie je meteen hoe het in de winkel toont."
+        description: "Voorraad aanpassen? Ga naar /admin/voorraad.html. Voeg producten toe, pas ze aan, sleep om te herordenen of verwijder met de ✕. Rechts zie je meteen hoe het in de winkel toont."
         fields:
           - label: "Producten"
             name: "products"
@@ -83,11 +83,33 @@ collections:
                 default: "Nieuw"
                 required: false
                 hint: "Is dit onderdeel nieuw of tweedehands (occasie)? Verschijnt als filter op de site."
+              - label: "Startvoorraad"
+                name: "stock"
+                widget: "number"
+                value_type: "int"
+                min: 0
+                default: 1
+                hint: "Enkel voor een NIEUW product: met hoeveel stuks start het? Daarna telt de site automatisch af bij elke verkoop. Voorraad van bestaande producten aanpassen (bijbestellen) doe je op /admin/voorraad.html."
               - label: "Afbeelding"
                 name: "image"
                 widget: "image"
                 required: false
                 hint: "Optioneel. Geen foto? Dan toont de site een nette placeholder."
+              - label: "Beschrijving"
+                name: "beschrijving"
+                widget: "text"
+                required: false
+                hint: "Optioneel. Extra uitleg die enkel op de productpagina verschijnt (niet in de winkellijst). Laat een lege regel tussen alinea's voor een nieuwe alinea."
+              - label: "Beschrijving (Frans)"
+                name: "beschrijving_fr"
+                widget: "text"
+                required: false
+                hint: "Optioneel. Leeg = de Nederlandse beschrijving wordt getoond."
+              - label: "Beschrijving (Duits)"
+                name: "beschrijving_de"
+                widget: "text"
+                required: false
+                hint: "Optioneel. Leeg = de Nederlandse beschrijving wordt getoond."
 
   - name: "categorieen"
     label: "Categorieën"

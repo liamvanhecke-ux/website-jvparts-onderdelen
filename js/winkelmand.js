@@ -94,7 +94,12 @@ function changeQty(id, delta) {
     const cart = getCart();
     const item = cart.find(i => i.id === id);
     if (!item) return;
-    item.qty = Math.max(1, item.qty + delta);
+    const max = item.max !== undefined ? Number(item.max) : 99;
+    if (delta > 0 && item.qty >= max) {
+        showToast(t('product.maxStock'));
+        return;
+    }
+    item.qty = Math.max(1, Math.min(max, item.qty + delta));
     saveCart(cart);
     renderWinkelmand();
 }

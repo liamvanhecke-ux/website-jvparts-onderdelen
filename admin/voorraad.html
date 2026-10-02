@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <title>JV-Parts Voorraad</title>
+  <link rel="icon" href="/images/favicon.ico">
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  <style>
+    :root { --accent:#15243d; --gold:#c9a55c; --bg:#f4f5f7; --card:#fff; --border:#e6e3dc; --muted:#8a8f98;
+            --ok:#2f8a5b; --ok-bg:#e7f3ec; --low:#9a6b08; --low-bg:#fbf0d8; --out:#a32d2d; --out-bg:#f7e9e9; }
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; background:var(--bg); color:#222; }
+    header { background:var(--accent); color:#fff; padding:14px 20px; display:flex; align-items:center; gap:16px; }
+    header h1 { font-size:1.1rem; } header h1 span { color:var(--gold); }
+    header a { color:var(--gold); font-size:.85rem; margin-left:auto; text-decoration:none; }
+    main { max-width:900px; margin:24px auto; padding:0 16px; }
+    .kaart { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:20px; }
+    .balk { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:16px; }
+    input[type=search] { flex:1; min-width:180px; padding:10px 12px; border:1px solid var(--border); border-radius:8px; font:inherit; }
+    button { font:inherit; cursor:pointer; border:none; border-radius:8px; }
+    .primair { background:var(--accent); color:#fff; padding:10px 18px; font-weight:600; }
+    .primair:disabled { background:#dcdee2; color:#9aa0a8; cursor:not-allowed; }
+    table { width:100%; border-collapse:collapse; }
+    th { text-align:left; font-size:.75rem; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); padding:8px; border-bottom:2px solid var(--border); }
+    td { padding:10px 8px; border-bottom:1px solid var(--border); vertical-align:middle; }
+    tr.gewijzigd td { background:#fffaf0; }
+    .naam { font-weight:600; } .sub { color:var(--muted); font-size:.82rem; }
+    .stepper { display:inline-flex; align-items:center; border:1px solid var(--border); border-radius:8px; overflow:hidden; }
+    .stepper button { width:34px; height:34px; background:#fff; font-size:1.1rem; border-radius:0; }
+    .stepper input { width:52px; height:34px; border:none; border-left:1px solid var(--border); border-right:1px solid var(--border); text-align:center; font:inherit; font-weight:600; }
+    .label { display:inline-block; font-size:.72rem; font-weight:600; padding:3px 10px; border-radius:20px; white-space:nowrap; }
+    .in { color:var(--ok); background:var(--ok-bg); } .low { color:var(--low); background:var(--low-bg); } .out { color:var(--out); background:var(--out-bg); }
+    .used { color:var(--low); background:var(--low-bg); } .nieuw { color:var(--ok); background:var(--ok-bg); }
+    .melding { margin-top:14px; font-size:.9rem; min-height:1.2em; }
+    .fout { color:var(--out); } .goed { color:var(--ok); }
+    .login { text-align:center; padding:40px 20px; } .login p { margin-bottom:16px; color:var(--muted); }
+    @media (max-width:640px) { .kolom-staat, .kolom-status { display:none; } }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>JV<span>Parts</span> · Voorraad</h1>
+    <a href="/admin/">← Producten beheren</a>
+  </header>
+  <main>
+    <div class="kaart login" id="login" hidden>
+      <p>Log in met je beheerdersaccount om de voorraad aan te passen.</p>
+      <button class="primair" onclick="netlifyIdentity.open('login')">Inloggen</button>
+    </div>
+
+    <div class="kaart" id="app" hidden>
+      <div class="balk">
+        <input type="search" id="zoek" placeholder="Zoek product...">
+        <button class="primair" id="opslaan" disabled>Opslaan</button>
+      </div>
+      <table>
+        <thead><tr><th>Product</th><th class="kolom-staat">Staat</th><th>Voorraad</th><th class="kolom-status">Op de site</th></tr></thead>
+        <tbody id="lijst"></tbody>
+      </table>
+      <p class="melding" id="melding"></p>
+    </div>
+  </main>
+
+  <script>
+    const LAGE_GRENS = 2; // zelfde als LAGE_VOORRAAD_GRENS in js/cart.js
+    let producten = [];   // { id, name, subtitle, condition, stock, origineel }
+
+    const slugify = s => String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
+      .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]));
+
+    function status(p) {
+      if (p.stock === null) return ['in', 'Op voorraad (onbeperkt)'];
+      const vrij = p.stock - (p.gereserveerd || 0);
+      if (p.stock <= 0) return ['out', 'Uitverkocht'];
+      if (vrij <= 0) return ['low', 'Tijdelijk gereserveerd'];
+      if (p.condition !== 'Tweedehands' && vrij <= LAGE_GRENS) return ['low', `Nog maar ${vrij} op voorraad`];
+      return ['in', 'Op voorraad'];
+    }
+
+    function toon() {
+      const q = document.getElementById('zoek').value.trim().toLowerCase();
+      const lijst = document.getElementById('lijst');
+      lijst.innerHTML = producten
+        .filter(p => !q || (p.name + ' ' + p.subtitle).toLowerCase().includes(q))
+        .map(p => {
+          const [cls, tekst] = status(p);
+          const tweedehands = p.condition === 'Tweedehands';
+          return `<tr data-id="${p.id}" class="${p.stock !== p.origineel ? 'gewijzigd' : ''}">
+            <td><div class="naam">${esc(p.name)}</div><div class="sub">${esc(p.subtitle)}</div></td>
+            <td class="kolom-staat"><span class="label ${tweedehands ? 'used' : 'nieuw'}">${tweedehands ? 'Tweedehands' : 'Nieuw'}</span></td>
+            <td><div class="stepper">
+              <button type="button" data-d="-1" aria-label="Min">−</button>
+              <input type="number" min="0" step="1" value="${p.stock ?? ''}" placeholder="∞" aria-label="Voorraad ${esc(p.name)}">
+              <button type="button" data-d="1" aria-label="Plus">+</button>
+            </div></td>
+            <td class="kolom-status"><span class="label ${cls}">${tekst}</span>
+              ${p.gereserveerd ? `<div class="sub">${p.gereserveerd} in een lopende betaling</div>` : ''}</td>
+          </tr>`;
+        }).join('');
+      const aantalGewijzigd = producten.filter(p => p.stock !== p.origineel).length;
+      const knop = document.getElementById('opslaan');
+      knop.disabled = aantalGewijzigd === 0;
+      knop.textContent = aantalGewijzigd ? `Opslaan (${aantalGewijzigd})` : 'Opslaan';
+    }
+
+    function zetAantal(id, waarde) {
+      const p = producten.find(x => x.id === id);
+      const n = parseInt(waarde, 10);
+      p.stock = isNaN(n) ? p.origineel : Math.max(0, n);
+      toon();
+      document.querySelector(`tr[data-id="${id}"] input`)?.focus();
+    }
+
+    document.getElementById('lijst').addEventListener('click', e => {
+      const knop = e.target.closest('button[data-d]');
+      if (!knop) return;
+      const id = knop.closest('tr').dataset.id;
+      const p = producten.find(x => x.id === id);
+      zetAantal(id, (p.stock ?? 0) + Number(knop.dataset.d));
+    });
+    document.getElementById('lijst').addEventListener('change', e => {
+      if (e.target.matches('input')) zetAantal(e.target.closest('tr').dataset.id, e.target.value);
+    });
+    document.getElementById('zoek').addEventListener('input', toon);
+
+    function melding(tekst, soort) {
+      const el = document.getElementById('melding');
+      el.textContent = tekst; el.className = 'melding ' + (soort || '');
+    }
+
+    async function laad() {
+      melding('Laden...');
+      const [data, live] = await Promise.all([
+        fetch('/data/products.json', { cache: 'no-store' }).then(r => r.json()),
+        fetch('/.netlify/functions/voorraad', { cache: 'no-store' }).then(r => r.json()),
+      ]);
+      producten = (data.products || []).map(p => {
+        const id = slugify(p.name);
+        const v = live.voorraad && live.voorraad[id];
+        const stock = v ? v.stock : null;
+        return { id, name: p.name, subtitle: p.subtitle || '', condition: p.condition || 'Nieuw', stock, origineel: stock,
+                 gereserveerd: v ? v.gereserveerd : 0 };
+      });
+      toon();
+      melding('');
+    }
+
+    document.getElementById('opslaan').addEventListener('click', async () => {
+      const user = netlifyIdentity.currentUser();
+      if (!user) return netlifyIdentity.open('login');
+      const wijzigingen = {};
+      producten.filter(p => p.stock !== p.origineel && p.stock !== null).forEach(p => wijzigingen[p.id] = p.stock);
+      const knop = document.getElementById('opslaan');
+      knop.disabled = true; melding('Opslaan...');
+      try {
+        const token = await user.jwt();
+        const res = await fetch('/.netlify/functions/voorraad', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+          body: JSON.stringify({ voorraad: wijzigingen }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Opslaan mislukt');
+        producten.forEach(p => {
+          const v = data.voorraad[p.id];
+          p.stock = v ? v.stock : null; p.origineel = p.stock; p.gereserveerd = v ? v.gereserveerd : 0;
+        });
+        toon();
+        melding(`✓ ${Object.keys(wijzigingen).length} product(en) opgeslagen. De site toont het meteen.`, 'goed');
+      } catch (err) {
+        melding('✋ ' + err.message, 'fout');
+        toon();
+      }
+    });
+
+    function start(user) {
+      document.getElementById('login').hidden = !!user;
+      document.getElementById('app').hidden = !user;
+      if (user) laad().catch(() => melding('✋ Kon de voorraad niet laden. Staat de site online op Netlify?', 'fout'));
+    }
+    netlifyIdentity.on('init', start);
+    netlifyIdentity.on('login', user => { netlifyIdentity.close(); start(user); });
+    netlifyIdentity.on('logout', () => start(null));
+    netlifyIdentity.init();
+  </script>
+</body>
+</html>

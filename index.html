@@ -72,6 +72,22 @@
         <div class="categories" id="category-chips">
             <div class="category-chip active" id="products" data-cat="Alles"><span class="chip-check"></span><span data-i18n="index.catAll">Alles</span></div>
         </div>
+        <button type="button" id="filter-trigger" class="filter-trigger">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M4 5h16M7 12h10M10 19h4" stroke-linecap="round" />
+            </svg>
+            <span data-i18n="index.filters">Filters</span>
+            <span class="filter-count" id="filter-count" hidden>0</span>
+        </button>
+        <div id="filter-overlay"></div>
+        <div id="filter-panel" role="dialog" aria-modal="true">
+            <div class="filter-panel-header">
+                <h3 data-i18n="index.filterCategories">Categorieën</h3>
+                <button type="button" id="filter-panel-close" aria-label="Sluiten">✕</button>
+            </div>
+            <div class="filter-panel-list" id="filter-panel-list"></div>
+            <button type="button" id="filter-panel-apply" data-i18n="index.filterApply">Toepassen</button>
+        </div>
         <div class="segmented" id="condition-chips">
             <div class="segmented-indicator" id="condition-indicator"></div>
             <div class="segmented-option active" data-cond="Alles" data-i18n="index.condAll">Alles</div>
@@ -90,7 +106,27 @@
             <p id="products-loading" style="color:#888;grid-column:1/-1" data-i18n="index.loading">Producten laden...</p>
         </div>
     </main>
-    <footer id="foot"> &copy; 2026 JV-Parts <span data-i18n="common.footer">Alle rechten voorbehouden</span> </footer>
+    <footer id="foot">
+        <div class="footer-grid">
+            <div class="footer-block">
+                <div class="footer-brand">JV<span>Parts</span></div>
+                <p>Nederzwalmsesteenweg 94<br>9750 Zingem, België</p>
+                <p class="footer-vat"><span data-i18n="footer.vatNumber">Ondernemingsnummer</span>: BE 0___.___.___ <em data-i18n="footer.vatPending">(nog toe te voegen)</em></p>
+            </div>
+            <div class="footer-block">
+                <h6 data-i18n="footer.contactTitle">Contact</h6>
+                <p><a href="tel:+32470123456">+32 470 12 34 56</a></p>
+                <p><a href="mailto:info@jvparts.be">info@jvparts.be</a></p>
+            </div>
+            <div class="footer-block">
+                <h6 data-i18n="footer.infoTitle">Informatie</h6>
+                <p><a href="voorwaarden.html" data-i18n="footer.terms">Algemene voorwaarden</a></p>
+                <p><a href="privacy.html" data-i18n="footer.privacy">Privacybeleid</a></p>
+                <p><a href="contact.html" data-i18n="nav.contact">Contact</a></p>
+            </div>
+        </div>
+        <div class="footer-bottom">&copy; 2026 <span>JV-Parts</span> <span data-i18n="common.footer">Alle rechten voorbehouden</span></div>
+    </footer>
     <div id="toast"></div>
     <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
     <script src="js/i18n.js"></script>

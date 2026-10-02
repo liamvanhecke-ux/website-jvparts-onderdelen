@@ -42,15 +42,26 @@ function slugify(str) {
         .replace(/^-|-$/g, '');
 }
 
-function voegToeAanWinkelmand(product) {
+/* Geeft het aantal stuks terug dat effectief is toegevoegd (kan minder zijn
+   dan gevraagd als de voorraad op is). product.max = maximale voorraad. */
+function voegToeAanWinkelmand(product, aantal) {
+    aantal = Math.max(1, parseInt(aantal, 10) || 1);
+    const max = product.max !== undefined && product.max !== '' ? Number(product.max) : Infinity;
     const cart = getCart();
     const bestaand = cart.find(i => i.id === product.id);
+    const alInMand = bestaand ? bestaand.qty : 0;
+    const toegevoegd = Math.max(0, Math.min(aantal, max - alInMand));
+    if (toegevoegd === 0) return 0;
     if (bestaand) {
-        bestaand.qty++;
+        bestaand.qty += toegevoegd;
+        if (isFinite(max)) bestaand.max = max;
     } else {
-        cart.push({ id: product.id, name: product.name, subtitle: product.subtitle || '', price: product.price, image: product.image || '', qty: 1 });
+        const item = { id: product.id, name: product.name, subtitle: product.subtitle || '', price: product.price, image: product.image || '', qty: toegevoegd };
+        if (isFinite(max)) item.max = max;
+        cart.push(item);
     }
     saveCart(cart);
+    return toegevoegd;
 }
 
 
@@ -123,7 +134,66 @@ function showToast(msg) {
     toast.textContent = msg;
     toast.classList.add('show');
     clearTimeout(toast._timer);
-    toast._timer = setTimeout(() => toast.classList.remove('show'), 2800);
+    toast._timer = setTimeout(() => toast.classList.remove('show'), Math.max(2800, msg.length * 60));
 }
 
 document.addEventListener('DOMContentLoaded', updateCartBadges);
+
+
+/* ===== Voorraad =====
+   Elk product in data/products.json heeft een veld "stock" (aantal stuks).
+   - 0 of minder                → Uitverkocht (niet te bestellen)
+   - Nieuw en 1 of 2 stuks     → "Nog maar X op voorraad" (low stock)
+   - Tweedehands               → nooit een low-stock melding, want daar
+                                 is meestal maar 1 stuk van en dat is normaal.
+   Oude producten zonder "stock" vallen terug op het oude "voorraad"-veld. */
+const LAGE_VOORRAAD_GRENS = 2;
+
+function voorraadAantal(p) {
+    if (p.stock !== undefined && p.stock !== null && p.stock !== '') {
+        const n = parseInt(p.stock, 10);
+        return isNaN(n) ? Infinity : Math.max(0, n);
+    }
+    if (p.voorraad === 'Uitverkocht') return 0;
+    return Infinity; // onbekend = geen limiet
+}
+
+function voorraadInfo(p) {
+    const aantal = voorraadAantal(p);
+    const tweedehands = p.condition === 'Tweedehands';
+    if (aantal <= 0 && p.gereserveerd > 0) {
+        // Iemand anders is het laatste stuk nu aan het afrekenen
+        return { cls: 'low', label: t('product.stockReserved'), aantal: 0, gereserveerd: true };
+    }
+    if (aantal <= 0) return { cls: 'out', label: t('product.stockOut'), aantal };
+    if (!tweedehands && aantal <= LAGE_VOORRAAD_GRENS) {
+        return { cls: 'low', label: t('product.stockLowCount', { n: aantal }), aantal };
+    }
+    return { cls: 'in', label: t('product.stockIn'), aantal };
+}
+
+/* Hoeveel stuks van dit product zitten al in de winkelmand? */
+function aantalInWinkelmand(id) {
+    const item = getCart().find(i => i.id === id);
+    return item ? item.qty : 0;
+}
+
+/* Haalt de live voorraad op (Netlify Blobs via een functie) en zet die in
+   p.stock. Lukt dat niet (bv. lokaal zonder `netlify dev`), dan blijft de
+   voorraad uit products.json gewoon staan. */
+async function laadLiveVoorraad(producten) {
+    try {
+        const res = await fetch('/.netlify/functions/voorraad', { cache: 'no-store' });
+        if (!res.ok) throw new Error(res.status);
+        const { voorraad } = await res.json();
+        producten.forEach(p => {
+            const v = voorraad && voorraad[slugify(p.name)];
+            if (!v || v.beschikbaar === null) return; // onbeperkt of onbekend
+            p.stock = v.beschikbaar;          // wat klanten nog kunnen kopen
+            p.gereserveerd = v.gereserveerd;  // stuks in lopende betalingen
+        });
+    } catch (err) {
+        console.warn('Live voorraad niet beschikbaar, products.json wordt gebruikt.', err);
+    }
+    return producten;
+}

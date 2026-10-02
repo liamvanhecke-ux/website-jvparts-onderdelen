@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "description": "JV-Parts webshop met Stripe-betalingen via Netlify Functions",
   "dependencies": {
+    "@netlify/blobs": "^11.1.2",
     "stripe": "^22.5.0"
   }
 }

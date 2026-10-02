@@ -25,6 +25,30 @@ document.addEventListener('taalGewijzigd', toonBetaalSamenvatting);
 })();
 
 let huidigeMethode = 'bancontact';
+const BETALING_KEY = 'jvparts_betaling'; // id van de lopende Stripe-betaling
+
+/* Terug van Stripe via "terug"/annuleren: die betaling meteen afsluiten,
+   zodat de gereserveerde stuks direct terug vrijkomen voor andere klanten. */
+(function () {
+    const params = new URLSearchParams(location.search);
+    const sessionId = params.get('geannuleerd');
+    if (!sessionId) return;
+    history.replaceState(null, '', location.pathname);
+    localStorage.removeItem(BETALING_KEY);
+    fetch('/.netlify/functions/annuleer-betaling', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionId }),
+    }).catch(() => { /* niet erg: de reservering verloopt vanzelf */ });
+    showToast(t('betalen.cancelled'));
+})();
+
+function voorraadFout(data) {
+    const naam = data.product || '';
+    if (data.beschikbaar > 0) return t('betalen.stockTooFew', { naam, n: data.beschikbaar });
+    if (data.gereserveerd > 0) return t('betalen.stockReserved', { naam });
+    return t('betalen.stockOut', { naam });
+}
 
 function selecteer(label, methode) {
     document.querySelectorAll('.betaal-methode').forEach(el => el.classList.remove('geselecteerd'));
@@ -60,20 +84,27 @@ async function startBetaling() {
                 methode: huidigeMethode,
                 verzending: getVerzendingPrijs(),
                 klant,
+                vorigeSessie: localStorage.getItem(BETALING_KEY) || undefined,
             }),
         });
 
         const data = await res.json();
 
+        if (res.status === 409 && data && data.code === 'voorraad') {
+            const fout = new Error(voorraadFout(data));
+            fout.toonAanKlant = true;
+            throw fout;
+        }
         if (!res.ok || !data.url) {
             throw new Error((data && data.error) || 'Onbekende fout');
         }
+        if (data.sessionId) localStorage.setItem(BETALING_KEY, data.sessionId);
 
         /* Doorsturen naar de beveiligde Stripe-betaalpagina */
         window.location.href = data.url;
     } catch (err) {
         console.error(err);
-        showToast(t('betalen.startError'));
+        showToast(err.toonAanKlant ? err.message : t('betalen.startError'));
         knop.disabled = false;
         tekst.style.display = '';
         spinner.style.display = 'none';

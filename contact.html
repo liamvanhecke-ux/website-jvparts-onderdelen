@@ -154,11 +154,32 @@
             <p style="font-size:.72rem;color:var(--muted);text-align:right;margin-top:6px;" data-i18n="contact.mapCredit"> Kaart © OpenStreetMap </p>
         </div>
     </section>
-    <footer id="foot"> &copy; 2026 <span>JV-Parts</span> <span data-i18n="common.footer">Alle rechten voorbehouden</span> </footer>
+    <footer id="foot">
+        <div class="footer-grid">
+            <div class="footer-block">
+                <div class="footer-brand">JV<span>Parts</span></div>
+                <p>Nederzwalmsesteenweg 94<br>9750 Zingem, België</p>
+                <p class="footer-vat"><span data-i18n="footer.vatNumber">Ondernemingsnummer</span>: BE 0___.___.___ <em data-i18n="footer.vatPending">(nog toe te voegen)</em></p>
+            </div>
+            <div class="footer-block">
+                <h6 data-i18n="footer.contactTitle">Contact</h6>
+                <p><a href="tel:+32470123456">+32 470 12 34 56</a></p>
+                <p><a href="mailto:info@jvparts.be">info@jvparts.be</a></p>
+            </div>
+            <div class="footer-block">
+                <h6 data-i18n="footer.infoTitle">Informatie</h6>
+                <p><a href="voorwaarden.html" data-i18n="footer.terms">Algemene voorwaarden</a></p>
+                <p><a href="privacy.html" data-i18n="footer.privacy">Privacybeleid</a></p>
+                <p><a href="contact.html" data-i18n="nav.contact">Contact</a></p>
+            </div>
+        </div>
+        <div class="footer-bottom">&copy; 2026 <span>JV-Parts</span> <span data-i18n="common.footer">Alle rechten voorbehouden</span></div>
+    </footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/i18n.js"></script>
     <script src="js/cart.js"></script>
     <script src="js/sidebar.js"></script>
+    <script src="js/topbar-search.js"></script>
     <script src="js/contact.js"></script>
 </body>
 

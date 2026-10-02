@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="nl">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="images/favicon.ico" sizes="any">
+    <link rel="icon" type="image/svg+xml" href="images/jv-parts-tab.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JV-Parts Privacybeleid</title>
+</head>
+
+<body>
+    <div id="overlay"></div>
+    <aside id="sidebar">
+        <div class="sidebar-logo">JV<span>Parts</span></div>
+        <nav>
+            <a href="index.html">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z" />
+                    <path d="M9 21V12h6v9" />
+                </svg> <span data-i18n="nav.home">Homepagina</span> </a>
+            <a href="contact.html">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                </svg> <span data-i18n="nav.contact">Contact</span> </a>
+            <a href="winkelmand.html" id="sidebar-cart-link">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <circle cx="9" cy="21" r="1" />
+                    <circle cx="20" cy="21" r="1" />
+                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+                </svg> <span data-i18n="nav.cart">Winkelmand</span> <span class="cart-badge" id="cart-count-sidebar">0</span>
+            </a>
+        </nav>
+        <div class="sidebar-close" id="sidebar-close">✕ &nbsp;<span data-i18n="nav.closeMenu">Sluit menu</span></div>
+    </aside>
+    <header id="topbar">
+        <button id="hamburger" aria-label="Menu openen">
+            <span></span><span></span><span></span>
+        </button>
+        <a href="index.html" class="topbar-brand">JV Parts</a>
+        <div class="topbar-search">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            <input type="text" data-i18n-placeholder="common.searchPlaceholder" placeholder="Zoek onderdelen...">
+        </div>
+        <div class="taal-switcher">
+            <button class="taal-knop" data-taal="nl">NL</button>
+            <button class="taal-knop" data-taal="fr">FR</button>
+            <button class="taal-knop" data-taal="de">DE</button>
+        </div>
+        <a href="winkelmand.html" class="topbar-cart" data-i18n-aria-label="nav.cart" aria-label="Winkelmand">
+            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <circle cx="9" cy="21" r="1" />
+                <circle cx="20" cy="21" r="1" />
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+            </svg>
+            <span class="dot" id="cart-count-top">0</span>
+        </a>
+    </header>
+    <section class="legal-hero">
+        <div class="legal-hero-inner">
+            <h1>Privacybeleid</h1>
+            <p class="legal-updated">Laatst bijgewerkt: september 2026</p>
+        </div>
+    </section>
+    <main class="legal-page">
+      <div class="legal-card">
+        <p>JV-Parts (“wij”, “ons”) hecht belang aan de bescherming van je persoonsgegevens. In dit privacybeleid
+            leggen we uit welke gegevens we verzamelen, waarom, en welke rechten je hebt. Dit beleid is van
+            toepassing op de website jvparts.be en op alle bestellingen die je bij ons plaatst.</p>
+
+        <h2>1. Wie is verantwoordelijk voor je gegevens?</h2>
+        <p>
+            JV-Parts<br>
+            Nederzwalmsesteenweg 94, 9750 Zingem, België<br>
+            Ondernemingsnummer: <span class="legal-placeholder">BE 0___.___.___ (nog toe te voegen)</span><br>
+            E-mail: <a href="mailto:info@jvparts.be">info@jvparts.be</a><br>
+            Telefoon: <a href="tel:+32470123456">+32 470 12 34 56</a>
+        </p>
+
+        <h2>2. Welke gegevens verzamelen we?</h2>
+        <ul>
+            <li><strong>Contactgegevens:</strong> naam, e-mailadres, telefoonnummer, adres (via het contactformulier
+                of bij een bestelling).</li>
+            <li><strong>Bestelgegevens:</strong> afleveradres, bestelde producten, bestelbedrag, betaalstatus.</li>
+            <li><strong>Betaalgegevens:</strong> je kaart- of bankgegevens worden rechtstreeks door onze
+                betaalverwerker Stripe verwerkt. Wij zien of bewaren deze zelf nooit.</li>
+            <li><strong>Technische gegevens:</strong> je taalkeuze en de inhoud van je winkelmand worden lokaal in je
+                browser bewaard (localStorage), niet op onze servers.</li>
+        </ul>
+
+        <h2>3. Waarom verwerken we je gegevens?</h2>
+        <ul>
+            <li>Om je bestelling te verwerken, te leveren en op te volgen.</li>
+            <li>Om je vragen via het contactformulier te beantwoorden.</li>
+            <li>Om te voldoen aan wettelijke verplichtingen (bv. boekhouding en btw-wetgeving).</li>
+            <li>Om onze website en dienstverlening te verbeteren.</li>
+        </ul>
+        <p>We gebruiken je gegevens niet voor geautomatiseerde profilering of het versturen van marketing zonder je
+            uitdrukkelijke toestemming.</p>
+
+        <h2>4. Delen we je gegevens met derden?</h2>
+        <p>We delen gegevens enkel met partijen die ons helpen onze dienst te leveren, en enkel voor zover nodig:</p>
+        <ul>
+            <li><strong>Stripe:</strong> voor het veilig verwerken van betalingen.</li>
+            <li><strong>Web3Forms:</strong> voor het verwerken van berichten via ons contactformulier.</li>
+            <li><strong>Netlify:</strong> onze hostingpartij, waar de website en bestelgegevens technisch worden
+                opgeslagen.</li>
+            <li>Vervoerders/koeriers: enkel je naam en afleveradres, om je bestelling te kunnen leveren.</li>
+        </ul>
+        <p>We verkopen je gegevens nooit aan derden.</p>
+
+        <h2>5. Cookies en lokale opslag</h2>
+        <p>Onze website gebruikt geen tracking- of advertentiecookies. We gebruiken enkel functionele opslag
+            (localStorage) in je browser om je winkelmand en taalkeuze te onthouden. Wanneer je een bestelling
+            afrekent via Stripe, of de kaart op onze contactpagina (OpenStreetMap) bekijkt, kunnen die externe
+            diensten hun eigen cookies plaatsen. Hun eigen privacybeleid is daarop van toepassing.</p>
+
+        <h2>6. Hoelang bewaren we je gegevens?</h2>
+        <p>We bewaren bestel- en facturatiegegevens zo lang als wettelijk verplicht (in België doorgaans 7 jaar voor
+            boekhoudkundige documenten). Gegevens uit het contactformulier bewaren we niet langer dan nodig om je
+            vraag te beantwoorden.</p>
+
+        <h2>7. Wat zijn je rechten?</h2>
+        <p>Onder de AVG/GDPR heb je het recht op:</p>
+        <ul>
+            <li>Inzage in de gegevens die we over je bewaren;</li>
+            <li>Verbetering van onjuiste gegevens;</li>
+            <li>Verwijdering van je gegevens (voor zover geen wettelijke bewaarplicht geldt);</li>
+            <li>Beperking of bezwaar tegen de verwerking;</li>
+            <li>Overdraagbaarheid van je gegevens.</li>
+        </ul>
+        <p>Om een van deze rechten uit te oefenen, neem contact op via
+            <a href="mailto:info@jvparts.be">info@jvparts.be</a>. Je hebt ook het recht om een klacht in te dienen
+            bij de Belgische Gegevensbeschermingsautoriteit (<a href="https://www.gegevensbeschermingsautoriteit.be"
+                target="_blank" rel="noopener">gegevensbeschermingsautoriteit.be</a>).
+        </p>
+
+        <h2>8. Beveiliging</h2>
+        <p>We nemen redelijke technische en organisatorische maatregelen om je gegevens te beschermen tegen verlies,
+            misbruik of ongeautoriseerde toegang. Betalingen verlopen via Stripe, een PCI-DSS-gecertificeerde
+            betaalverwerker.</p>
+
+        <h2>9. Wijzigingen aan dit beleid</h2>
+        <p>We kunnen dit privacybeleid van tijd tot tijd aanpassen. De meest recente versie staat altijd op deze
+            pagina.</p>
+
+        <h2>10. Contact</h2>
+        <p>Vragen over dit privacybeleid? Neem contact op via <a href="mailto:info@jvparts.be">info@jvparts.be</a>
+            of via onze <a href="contact.html">contactpagina</a>.</p>
+      </div>
+    </main>
+    <footer id="foot">
+        <div class="footer-grid">
+            <div class="footer-block">
+                <div class="footer-brand">JV<span>Parts</span></div>
+                <p>Nederzwalmsesteenweg 94<br>9750 Zingem, België</p>
+                <p class="footer-vat"><span data-i18n="footer.vatNumber">Ondernemingsnummer</span>: BE 0___.___.___ <em data-i18n="footer.vatPending">(nog toe te voegen)</em></p>
+            </div>
+            <div class="footer-block">
+                <h6 data-i18n="footer.contactTitle">Contact</h6>
+                <p><a href="tel:+32470123456">+32 470 12 34 56</a></p>
+                <p><a href="mailto:info@jvparts.be">info@jvparts.be</a></p>
+            </div>
+            <div class="footer-block">
+                <h6 data-i18n="footer.infoTitle">Informatie</h6>
+                <p><a href="voorwaarden.html" data-i18n="footer.terms">Algemene voorwaarden</a></p>
+                <p><a href="privacy.html" data-i18n="footer.privacy">Privacybeleid</a></p>
+                <p><a href="contact.html" data-i18n="nav.contact">Contact</a></p>
+            </div>
+        </div>
+        <div class="footer-bottom">&copy; 2026 <span>JV-Parts</span> <span data-i18n="common.footer">Alle rechten voorbehouden</span></div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/i18n.js"></script>
+    <script src="js/cart.js"></script>
+    <script src="js/sidebar.js"></script>
+    <script src="js/topbar-search.js"></script>
+</body>
+
+</html>

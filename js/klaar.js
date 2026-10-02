@@ -22,6 +22,7 @@
         if (data.status === 'paid') {
             localStorage.removeItem('jvparts_cart');
             localStorage.removeItem('jvparts_checkout');
+            localStorage.removeItem('jvparts_betaling');
             updateCartBadges();
 
             stateEl.textContent = t('klaar.thanks');
