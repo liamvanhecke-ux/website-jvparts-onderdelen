@@ -14,8 +14,22 @@
 import Stripe from 'stripe';
 import { randomUUID } from 'node:crypto';
 import { zoekProduct, reserveer, annuleerReservering, reserveringen, json } from '../lib/voorraad.mjs';
+import { magDoor } from '../lib/ratelimit.mjs';
 
 const RESERVERING_MINUTEN = 30; // minimum dat Stripe toelaat voor expires_at
+
+// Verzendprijs NOOIT vertrouwen vanuit de browser (zelfde reden als bij
+// productprijzen): een klant kan de request naar deze functie aanpassen
+// (devtools/Postman) en zo een andere verzendprijs doorsturen dan hij op
+// de site koos. Enkel deze twee bedragen bestaan echt (zie winkelmand.html,
+// radio's 'bpost' en 'afhalen'); alles daarbuiten wordt geweigerd.
+const TOEGESTANE_VERZENDPRIJZEN = [0, 4.95];
+function geldigeVerzendPrijs(waarde) {
+  const n = parseFloat(waarde);
+  if (!Number.isFinite(n)) return null;
+  const match = TOEGESTANE_VERZENDPRIJZEN.find((p) => Math.abs(p - n) < 0.001);
+  return match === undefined ? null : match;
+}
 
 // Een vorige, onafgewerkte betaling van dezelfde klant opruimen (bv. hij
 // ging terug met de knop van de browser), anders blokkeert hij zichzelf.
@@ -31,6 +45,13 @@ async function ruimVorigeBetalingOp(stripe, sessionId) {
   }
 }
 
+// Stripe metadata-velden mogen max. 500 tekens zijn; we knippen ruim
+// daaronder af zodat een extreem lange invoer de betaling niet laat
+// crashen (klant zou dan een onduidelijke foutmelding krijgen terwijl
+// zijn reservering al vastligt).
+const MAX_VELDLENGTE = 200;
+const kort = (v) => String(v || '').slice(0, MAX_VELDLENGTE);
+
 // Onze eigen methode-namen (zoals gebruikt in betalen.html) ->
 // de payment_method_types die Stripe verwacht.
 const METHODE_MAP = {
@@ -40,8 +61,13 @@ const METHODE_MAP = {
   paypal: 'paypal',
 };
 
-export default async (req) => {
+export default async (req, context) => {
   if (req.method !== 'POST') return json(405, { error: 'Method Not Allowed' });
+
+  const ip = context?.ip || req.headers.get('x-nf-client-connection-ip') || '';
+  if (!(await magDoor(ip))) {
+    return json(429, { error: 'Te veel aanvragen kort na elkaar. Wacht even en probeer opnieuw.' });
+  }
 
   if (!process.env.STRIPE_SECRET_KEY) {
     console.error('STRIPE_SECRET_KEY ontbreekt in de omgeving.');
@@ -61,6 +87,9 @@ export default async (req) => {
 
   if (!Array.isArray(cart) || cart.length === 0) {
     return json(400, { error: 'Winkelmand is leeg.' });
+  }
+  if (cart.length > 50) {
+    return json(400, { error: 'Te veel artikelen in de winkelmand.' });
   }
 
   const stripeMethode = METHODE_MAP[methode];
@@ -95,7 +124,10 @@ export default async (req) => {
     });
   }
 
-  const verzendPrijs = Math.max(0, parseFloat(verzending) || 0);
+  const verzendPrijs = geldigeVerzendPrijs(verzending);
+  if (verzendPrijs === null) {
+    return json(400, { error: 'Ongeldige verzendprijs.' });
+  }
   if (verzendPrijs > 0) {
     lineItems.push({
       quantity: 1,
@@ -148,16 +180,18 @@ export default async (req) => {
       cancel_url: `${origin}/betalen.html?geannuleerd={CHECKOUT_SESSION_ID}`,
       metadata: {
         reservering: rid,
-        naam: [klantData.voornaam, klantData.achternaam].filter(Boolean).join(' '),
-        telefoon: klantData.telefoon || '',
-        adres: [
-          [klantData.straat, klantData.huisnr].filter(Boolean).join(' '),
-          [klantData.postcode, klantData.gemeente].filter(Boolean).join(' '),
-        ]
-          .filter(Boolean)
-          .join(', '),
-        land: klantData.land || '',
-        opmerking: klantData.opmerking || '',
+        naam: kort([klantData.voornaam, klantData.achternaam].filter(Boolean).join(' ')),
+        telefoon: kort(klantData.telefoon),
+        adres: kort(
+          [
+            [klantData.straat, klantData.huisnr].filter(Boolean).join(' '),
+            [klantData.postcode, klantData.gemeente].filter(Boolean).join(' '),
+          ]
+            .filter(Boolean)
+            .join(', ')
+        ),
+        land: kort(klantData.land),
+        opmerking: kort(klantData.opmerking),
       },
     });
 

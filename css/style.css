@@ -498,10 +498,20 @@ body {
 }
 
 /* ── PRODUCTPAGINA ── */
+/* .jv-breadcrumb (en verderop .product-info-tabs/.related-products) staan
+   rechtstreeks in <body>, en <body> is hier display:flex;flex-direction:column
+   (zie footer { margin-top:auto } verderop, voor de sticky footer). Bij een
+   flex-child met margin:0 auto wordt de breedte NIET automatisch tot
+   max-width gestretcht zoals bij een gewoon blok-element: zonder expliciete
+   width:100% krimpt het element tot de breedte van zijn eigen tekst/inhoud
+   en komt het daardoor NIET op dezelfde lijn te staan als de rest van de
+   pagina (zag je op grotere schermen: breadcrumb stond los/ergens in het
+   midden i.p.v. mooi boven de productfoto). width:100% lost dat op. */
 .jv-breadcrumb {
+    width: 100%;
     max-width: 1100px;
     margin: 0 auto;
-    padding: 20px 24px 0;
+    padding: 32px 24px 0;
     font-size: .82rem;
     color: var(--muted);
 }
@@ -647,23 +657,109 @@ body {
     margin-bottom: 12px;
 }
 
-.product-detail-description {
+/* Beschrijving + Kenmerken onder de productfoto, als tabbladen i.p.v. twee
+   losse blokken onder elkaar: compacter, en de klant klikt naar wat hem
+   interesseert i.p.v. alles na elkaar te moeten scrollen. */
+.product-info-tabs {
+    width: 100%;
     max-width: 1100px;
-    margin: 8px auto 48px;
+    margin: 8px auto 0;
     padding: 0 24px;
 }
 
-.product-detail-description h3 {
-    font-size: 1.05rem;
-    color: var(--dark);
-    margin-bottom: 10px;
+.info-tabs-nav {
+    display: flex;
+    gap: 24px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 20px;
 }
 
-.product-detail-description p {
+.info-tab {
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    padding: 10px 2px;
+    font: inherit;
+    font-size: .95rem;
+    font-weight: 600;
+    color: var(--muted);
+    cursor: pointer;
+}
+
+.info-tab.active {
+    color: var(--dark);
+    border-bottom-color: var(--gold);
+}
+
+.info-tab-panel {
+    display: none;
     color: var(--text);
     line-height: 1.65;
+}
+
+.info-tab-panel.active {
+    display: block;
+}
+
+.info-tab-panel p {
     margin-bottom: 12px;
     white-space: pre-line;
+}
+
+.specs-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.specs-table tr {
+    border-bottom: 1px solid var(--border);
+}
+
+.specs-table tr:last-child {
+    border-bottom: none;
+}
+
+.specs-table td {
+    padding: 10px 4px;
+    font-size: .92rem;
+}
+
+.specs-table td:first-child {
+    color: var(--muted);
+    width: 180px;
+}
+
+.specs-table td:last-child {
+    color: var(--text);
+    font-weight: 500;
+}
+
+/* ── PRODUCTPAGINA: veilig betalen ── */
+.product-trust-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+
+.product-trust-row span {
+    font-size: .78rem;
+    color: var(--muted);
+}
+
+.product-trust-row img {
+    height: 20px;
+    width: auto;
+    opacity: .85;
+}
+
+/* ── PRODUCTPAGINA: gerelateerde producten ── */
+.related-products {
+    width: 100%;
+    max-width: 1100px;
+    margin: 20px auto 48px;
+    padding: 0 24px;
 }
 
 .product-detail-notfound {

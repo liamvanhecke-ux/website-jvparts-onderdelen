@@ -31,10 +31,15 @@ function renderProducts(products) {
         return;
     }
     products.forEach(p => {
+        /* Productdata komt uit de admin-CMS. We vertrouwen die inhoud niet
+           blindweg in innerHTML: alles wat als tekst of attribuut terechtkomt
+           gaat door esc() (zie js/cart.js), zodat een naam/beschrijving met
+           HTML/script er nooit voor zorgt dat die code uitgevoerd wordt
+           (stored XSS). */
         const naam = veldVoorTaal(p, 'name');
         const subtitel = veldVoorTaal(p, 'subtitle');
         const imgContent = p.image
-            ? `<img src="${p.image}" alt="${naam}" style="width:100%;height:100%;object-fit:cover;">`
+            ? `<img src="${esc(p.image)}" alt="${esc(naam)}" style="width:100%;height:100%;object-fit:cover;">`
             : placeholderSVG;
         const pid = slugify(p.name);
         const badge = p.condition === 'Tweedehands'
@@ -49,16 +54,16 @@ function renderProducts(products) {
         <div class="product-card" onclick="location.href='product.html?id=${pid}'">
             <div class="product-img">${imgContent}${badge}${voorraadBadge}</div>
             <div class="product-info">
-                <div class="product-name">${naam}</div>
-                <div class="product-sub">${subtitel}</div>
+                <div class="product-name">${esc(naam)}</div>
+                <div class="product-sub">${esc(subtitel)}</div>
                 <div class="product-footer">
-                    <span class="product-price">€ ${p.price}</span>
+                    <span class="product-price">€ ${esc(p.price)}</span>
                     <button class="btn-add"
                         data-id="${pid}"
-                        data-name="${naam.replace(/"/g,'&quot;')}"
-                        data-subtitle="${subtitel.replace(/"/g,'&quot;')}"
-                        data-price="${p.price}"
-                        data-image="${p.image||''}"
+                        data-name="${esc(naam)}"
+                        data-subtitle="${esc(subtitel)}"
+                        data-price="${esc(p.price)}"
+                        data-image="${esc(p.image||'')}"
                         data-max="${isFinite(voorraad.aantal) ? voorraad.aantal : ''}"
                         ${uitverkocht ? 'disabled' : ''}
                         onclick="event.stopPropagation(); addProduct(this)">${uitverkocht ? t('product.stockOut') : t('index.addToCart')}</button>
@@ -292,6 +297,13 @@ window.addEventListener('resize', () => {
     if (activeOpt) layoutConditionSegmented(activeOpt);
 });
 
+/* De schuivende balk hangt niet af van productdata (enkel van de 3 vaste
+   knoppen hierboven in de HTML), dus meteen positioneren i.p.v. te wachten
+   tot /data/products.json en de live voorraad (2 netwerk-aanvragen) binnen
+   zijn. Zonder die vertraging verschijnt de balk soms heel even verkeerd
+   uitgelijnd ("geflitst") voor de JS kan positioneren. */
+bindConditionChips();
+
 function vertaalCategorie(catNaam, products) {
     if (huidigeTaal === 'nl') return catNaam;
     const veld = 'category_' + huidigeTaal;
@@ -308,7 +320,7 @@ function buildChips(products) {
         const chip = document.createElement('div');
         chip.className = 'category-chip';
         chip.dataset.cat = cat;
-        chip.innerHTML = `<span class="chip-check"></span>${vertaalCategorie(cat, products)}`;
+        chip.innerHTML = `<span class="chip-check"></span>${esc(vertaalCategorie(cat, products))}`;
         container.appendChild(chip);
     });
     bindChips();

@@ -31,12 +31,12 @@ function renderWinkelmand() {
         div.innerHTML = `
             <div class="cart-item-img">
                 ${item.image
-                ? `<img src="${item.image}" alt="${item.name}" style="width:100%;height:100%;object-fit:cover;">`
+                ? `<img src="${esc(item.image)}" alt="${esc(item.name)}" style="width:100%;height:100%;object-fit:cover;">`
                 : placeholderSVG}
             </div>
             <div class="cart-item-info">
-                <div class="cart-item-name">${item.name}</div>
-                <div class="cart-item-sub">${item.subtitle || ''}</div>
+                <div class="cart-item-name">${esc(item.name)}</div>
+                <div class="cart-item-sub">${esc(item.subtitle || '')}</div>
             </div>
             <div class="cart-item-qty">
                 <button class="qty-btn" onclick="changeQty('${item.id}', -1)">&#8722;</button>
@@ -65,7 +65,9 @@ function getVerzendPrijs() {
 
 function updateTotaal(cart) {
     const subtotaal = cart.reduce((s, i) => s + parsePrice(i.price) * i.qty, 0);
-    const verzending = getVerzendPrijs();
+    // Geen verzendkosten tonen/rekenen als de mand leeg is (anders stond er
+    // bij een leeg winkelmandje toch "Totaal € 4,95", wat lijkt op een bug).
+    const verzending = cart.length === 0 ? 0 : getVerzendPrijs();
     const totaal = subtotaal + verzending;
     const btw = berekenBtw(totaal);
     const fmt = n => n.toFixed(2).replace('.', ',');

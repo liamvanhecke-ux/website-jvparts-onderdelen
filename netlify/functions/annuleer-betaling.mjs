@@ -4,10 +4,16 @@
 
 import Stripe from 'stripe';
 import { annuleerReservering, json } from '../lib/voorraad.mjs';
+import { magDoor } from '../lib/ratelimit.mjs';
 
-export default async (req) => {
+export default async (req, context) => {
   if (req.method !== 'POST') return json(405, { error: 'Method Not Allowed' });
   if (!process.env.STRIPE_SECRET_KEY) return json(500, { error: 'Niet geconfigureerd.' });
+
+  const ip = context?.ip || req.headers.get('x-nf-client-connection-ip') || '';
+  if (!(await magDoor(ip))) {
+    return json(429, { error: 'Te veel aanvragen kort na elkaar. Wacht even en probeer opnieuw.' });
+  }
 
   let sessionId;
   try { ({ sessionId } = await req.json()); } catch { return json(400, { error: 'Ongeldige aanvraag.' }); }

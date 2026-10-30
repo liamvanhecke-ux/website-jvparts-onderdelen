@@ -37,8 +37,10 @@ function renderDetail() {
     document.getElementById('page-title').textContent = 'JV-Parts ' + naam;
     document.getElementById('breadcrumb-naam').textContent = naam;
 
+    // Productdata komt uit de admin-CMS; niet blindweg vertrouwen in innerHTML
+    // (stored-XSS-bescherming), zie ook de uitleg in js/index.js.
     document.getElementById('detail-image').innerHTML = p.image
-        ? `<img src="${p.image}" alt="${naam}">`
+        ? `<img src="${esc(p.image)}" alt="${esc(naam)}">`
         : placeholderSVG;
 
     document.getElementById('detail-category').textContent = categorie || '';
@@ -62,20 +64,7 @@ function renderDetail() {
     melding.style.display = uitverkocht ? '' : 'none';
     melding.textContent = voorraad.gereserveerd ? t('product.reservedNotice') : t('product.outOfStockNotice');
 
-    const beschrijvingWrap = document.getElementById('detail-description-wrap');
-    const beschrijvingText = document.getElementById('detail-description-text');
-    if (beschrijving.trim()) {
-        beschrijvingWrap.style.display = '';
-        beschrijvingText.innerHTML = '';
-        beschrijving.split(/\n\s*\n/).forEach(alinea => {
-            if (!alinea.trim()) return;
-            const el = document.createElement('p');
-            el.textContent = alinea.trim();
-            beschrijvingText.appendChild(el);
-        });
-    } else {
-        beschrijvingWrap.style.display = 'none';
-    }
+    renderInfoTabs(p, beschrijving, categorie);
 
     addBtn.dataset.id = pid;
     addBtn.dataset.name = naam;
@@ -83,6 +72,142 @@ function renderDetail() {
     addBtn.dataset.price = p.price;
     addBtn.dataset.image = p.image || '';
     addBtn.dataset.max = isFinite(voorraad.aantal) ? voorraad.aantal : '';
+
+    renderRelated();
+}
+
+/* ===== Beschrijving/Kenmerken als tabbladen ===== */
+let actieveTab = 'beschrijving';
+
+function renderInfoTabs(p, beschrijving, categorie) {
+    const wrap = document.getElementById('info-tabs');
+    const nav = document.getElementById('info-tabs-nav');
+    const paneelBeschrijving = document.getElementById('info-panel-beschrijving');
+    const paneelKenmerken = document.getElementById('info-panel-kenmerken');
+
+    paneelBeschrijving.innerHTML = '';
+    const heeftBeschrijving = !!beschrijving.trim();
+    if (heeftBeschrijving) {
+        beschrijving.split(/\n\s*\n/).forEach(alinea => {
+            if (!alinea.trim()) return;
+            const el = document.createElement('p');
+            el.textContent = alinea.trim();
+            paneelBeschrijving.appendChild(el);
+        });
+    }
+
+    /* Kenmerken komen uit velden die altijd gekend zijn (merk/subtitel,
+       categorie, staat) - geen extra admin-werk nodig. */
+    const staat = p.condition === 'Tweedehands' ? t('index.badgeUsed') : t('index.badgeNew');
+    const rijen = [
+        [t('product.brand'), veldVoorTaal(p, 'subtitle')],
+        [t('product.category'), categorie],
+        [t('product.condition'), staat],
+    ].filter(([, waarde]) => waarde && String(waarde).trim());
+
+    paneelKenmerken.innerHTML = rijen.length
+        ? `<table class="specs-table">${rijen.map(([label, waarde]) =>
+            `<tr><td>${esc(label)}</td><td>${esc(waarde)}</td></tr>`).join('')}</table>`
+        : '';
+
+    const tabs = [heeftBeschrijving ? 'beschrijving' : null, rijen.length ? 'kenmerken' : null].filter(Boolean);
+
+    if (tabs.length === 0) {
+        wrap.style.display = 'none';
+        return;
+    }
+    wrap.style.display = '';
+
+    /* Geen tabbalk tonen als er maar 1 tabblad iets te laten zien heeft. */
+    nav.style.display = tabs.length > 1 ? '' : 'none';
+    nav.querySelectorAll('.info-tab').forEach(btn => {
+        btn.style.display = tabs.includes(btn.dataset.tab) ? '' : 'none';
+    });
+
+    if (!tabs.includes(actieveTab)) actieveTab = tabs[0];
+    toonTab(actieveTab);
+}
+
+function toonTab(naam) {
+    actieveTab = naam;
+    document.querySelectorAll('#info-tabs-nav .info-tab').forEach(btn =>
+        btn.classList.toggle('active', btn.dataset.tab === naam));
+    document.getElementById('info-panel-beschrijving').classList.toggle('active', naam === 'beschrijving');
+    document.getElementById('info-panel-kenmerken').classList.toggle('active', naam === 'kenmerken');
+}
+
+document.getElementById('info-tabs-nav').addEventListener('click', e => {
+    const btn = e.target.closest('.info-tab');
+    if (btn) toonTab(btn.dataset.tab);
+});
+
+/* ===== Gerelateerde producten (zelfde categorie) ===== */
+function renderRelated() {
+    const container = document.getElementById('related-products');
+    const grid = document.getElementById('related-grid');
+    if (!huidigProduct) { container.style.display = 'none'; return; }
+
+    const verwant = alleProducten
+        .filter(p => p !== huidigProduct && p.category && p.category === huidigProduct.category)
+        .slice(0, 4);
+
+    if (verwant.length === 0) {
+        container.style.display = 'none';
+        return;
+    }
+    container.style.display = '';
+
+    /* Zelfde opbouw/escaping als de productkaarten op de homepage
+       (js/index.js): CMS-data nooit ongefilterd in innerHTML. */
+    grid.innerHTML = verwant.map(p => {
+        const naam = veldVoorTaal(p, 'name');
+        const subtitel = veldVoorTaal(p, 'subtitle');
+        const pid = slugify(p.name);
+        const imgContent = p.image
+            ? `<img src="${esc(p.image)}" alt="${esc(naam)}" style="width:100%;height:100%;object-fit:cover;">`
+            : placeholderSVG;
+        const badge = p.condition === 'Tweedehands'
+            ? `<div class="product-badge used">${t('index.badgeUsed')}</div>`
+            : `<div class="product-badge in">${t('index.badgeNew')}</div>`;
+        const voorraad = voorraadInfo(p);
+        const uitverkocht = voorraad.aantal <= 0;
+        return `
+        <div class="product-card" onclick="location.href='product.html?id=${pid}'">
+            <div class="product-img">${imgContent}${badge}</div>
+            <div class="product-info">
+                <div class="product-name">${esc(naam)}</div>
+                <div class="product-sub">${esc(subtitel)}</div>
+                <div class="product-footer">
+                    <span class="product-price">€ ${esc(p.price)}</span>
+                    <button class="btn-add"
+                        data-id="${pid}"
+                        data-name="${esc(naam)}"
+                        data-subtitle="${esc(subtitel)}"
+                        data-price="${esc(p.price)}"
+                        data-image="${esc(p.image||'')}"
+                        data-max="${isFinite(voorraad.aantal) ? voorraad.aantal : ''}"
+                        ${uitverkocht ? 'disabled' : ''}
+                        onclick="event.stopPropagation(); addProductFromCard(this)">${uitverkocht ? t('product.stockOut') : t('index.addToCart')}</button>
+                </div>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function addProductFromCard(btn) {
+    const product = {
+        id: btn.dataset.id, name: btn.dataset.name, subtitle: btn.dataset.subtitle,
+        price: btn.dataset.price, image: btn.dataset.image, max: btn.dataset.max,
+    };
+    if (voegToeAanWinkelmand(product) === 0) {
+        showToast(t('product.maxStock'));
+        return;
+    }
+    showToast('✓ ' + product.name + ' ' + t('index.toastAdded'));
+    const origineel = btn.textContent;
+    btn.textContent = t('index.added');
+    btn.disabled = true;
+    setTimeout(() => { btn.textContent = origineel; btn.disabled = false; }, 1200);
 }
 
 /* Hoeveel stuks mag de klant nog kiezen? (voorraad min wat al in de mand zit) */

@@ -95,12 +95,27 @@
                     <button class="btn-primary" id="detail-add-btn" data-i18n="product.addToCart">Voeg toe aan winkelmand</button>
                     <a href="winkelmand.html" class="btn-outline" data-i18n="product.goToCart">Naar winkelmand</a>
                 </div>
+                <div class="product-trust-row">
+                    <span data-i18n="product.securePayment">Veilig betalen met</span>
+                    <img src="images/bancontact.png" alt="Bancontact" loading="lazy">
+                    <img src="images/idealpng.png" alt="iDEAL" loading="lazy">
+                    <img src="images/visa.png" alt="Visa" loading="lazy">
+                    <img src="images/paypal.png" alt="PayPal" loading="lazy">
+                </div>
                 <a href="index.html" class="cart-continue" data-i18n="product.backToShop">&#8592; Terug naar het overzicht</a>
             </div>
         </div>
-        <div class="product-detail-description" id="detail-description-wrap" style="display:none;">
-            <h3 data-i18n="product.description">Beschrijving</h3>
-            <div id="detail-description-text"></div>
+        <div class="product-info-tabs" id="info-tabs" style="display:none;">
+            <div class="info-tabs-nav" id="info-tabs-nav">
+                <button type="button" class="info-tab" data-tab="beschrijving" data-i18n="product.description">Beschrijving</button>
+                <button type="button" class="info-tab" data-tab="kenmerken" data-i18n="product.specs">Kenmerken</button>
+            </div>
+            <div class="info-tab-panel" id="info-panel-beschrijving"></div>
+            <div class="info-tab-panel" id="info-panel-kenmerken"></div>
+        </div>
+        <div class="related-products" id="related-products" style="display:none;">
+            <h3 class="section-title" data-i18n="product.related">Ook interessant</h3>
+            <div class="product-grid" id="related-grid"></div>
         </div>
     </div>
 

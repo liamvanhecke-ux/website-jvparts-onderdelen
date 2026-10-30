@@ -34,10 +34,10 @@
                     <span class="gegevens-check-label">${t('klaar.amount')}</span>
                     <span>&euro;&nbsp;${bedrag}</span>
                 </div>
-                ${data.email ? `<div class="gegevens-check-row"><span class="gegevens-check-label">${t('klaar.email')}</span><span>${data.email}</span></div>` : ''}
+                ${data.email ? `<div class="gegevens-check-row"><span class="gegevens-check-label">${t('klaar.email')}</span><span>${esc(data.email)}</span></div>` : ''}
                 <div class="gegevens-check-row">
                     <span class="gegevens-check-label">${t('klaar.reference')}</span>
-                    <span>${sessionId.slice(-12)}</span>
+                    <span>${esc(sessionId.slice(-12))}</span>
                 </div>
                 <p style="margin-top:14px;color:var(--muted);font-size:.85rem;">
                     ${t('klaar.confirmationNote')}

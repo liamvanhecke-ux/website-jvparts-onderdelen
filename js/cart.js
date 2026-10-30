@@ -27,6 +27,15 @@ function parsePrice(str) {
     return parseFloat(String(str).replace(',', '.')) || 0;
 }
 
+/* Ontsnapt tekst voor gebruik in innerHTML, zodat data die uiteindelijk uit
+   de winkelmand of van Stripe komt nooit als HTML/script geïnterpreteerd
+   kan worden (XSS-bescherming). */
+function esc(str) {
+    return String(str ?? '').replace(/[&<>"']/g, c => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+    }[c]));
+}
+
 const BTW_PERCENTAGE = 21;
 
 /* Onze prijzen zijn btw-inclusief (verplicht voor consumentenprijzen),
@@ -92,18 +101,21 @@ function renderSamenvatting(opts) {
             return `
             <div class="summary-item">
                 <div class="summary-item-img">
-                    ${item.image ? `<img src="${item.image}" alt="${item.name}" style="width:100%;height:100%;object-fit:cover;">` : ph}
+                    ${item.image ? `<img src="${esc(item.image)}" alt="${esc(item.name)}" style="width:100%;height:100%;object-fit:cover;">` : ph}
                 </div>
                 <div style="flex:1;min-width:0;">
-                    <div class="summary-item-name">${item.name}</div>
-                    <div class="summary-item-sub">&times;${item.qty}${item.subtitle ? ' ' + item.subtitle : ''}</div>
+                    <div class="summary-item-name">${esc(item.name)}</div>
+                    <div class="summary-item-sub">&times;${item.qty}${item.subtitle ? ' ' + esc(item.subtitle) : ''}</div>
                 </div>
                 <div class="summary-item-price">&euro;&nbsp;${prijs.toFixed(2).replace('.', ',')}</div>
             </div>`;
         }).join('');
 
     const subtotaal  = cart.reduce((s, i) => s + parsePrice(i.price) * i.qty, 0);
-    const verzending = getVerzendingPrijs();
+    // Geen verzendkosten tonen/rekenen als de mand leeg is (zelfde reden als
+    // in winkelmand.js: anders toont de samenvatting een totaal > 0 terwijl
+    // er niks in de mand zit).
+    const verzending = cart.length === 0 ? 0 : getVerzendingPrijs();
     const totaal     = subtotaal + verzending;
     const btw        = berekenBtw(totaal);
     const fmt = n => n.toFixed(2).replace('.', ',');
