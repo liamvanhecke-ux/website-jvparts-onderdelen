@@ -147,9 +147,18 @@ function renderRelated() {
     const grid = document.getElementById('related-grid');
     if (!huidigProduct) { container.style.display = 'none'; return; }
 
-    const verwant = alleProducten
-        .filter(p => p !== huidigProduct && p.category && p.category === huidigProduct.category)
+    // Eerst proberen we producten uit dezelfde categorie te tonen. Is die
+    // categorie (bijna) leeg -bv. enkel dit ene testproduct- dan vallen we
+    // terug op andere producten uit de winkel, zodat de sectie niet gewoon
+    // leeg/verborgen blijft zoals voorheen.
+    const andereProducten = alleProducten.filter(p => p !== huidigProduct);
+    let verwant = andereProducten
+        .filter(p => p.category && p.category === huidigProduct.category)
         .slice(0, 4);
+
+    if (verwant.length === 0) {
+        verwant = andereProducten.slice(0, 4);
+    }
 
     if (verwant.length === 0) {
         container.style.display = 'none';

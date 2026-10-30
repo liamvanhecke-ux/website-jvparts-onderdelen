@@ -151,6 +151,15 @@ function showToast(msg) {
 
 document.addEventListener('DOMContentLoaded', updateCartBadges);
 
+/* Bij terugnavigeren met de browserknop herstelt Chrome/Firefox de pagina
+   soms uit de bfcache (zonder DOMContentLoaded opnieuw te vuren), waardoor
+   het winkelmand-getalletje in de navbar een oude waarde bleef tonen terwijl
+   de winkelmand zelf (die wel vers rendert) al leeg/anders was. pageshow met
+   event.persisted vangt dat geval op. */
+window.addEventListener('pageshow', (e) => {
+    if (e.persisted) updateCartBadges();
+});
+
 
 /* ===== Voorraad =====
    Elk product in data/products.json heeft een veld "stock" (aantal stuks).
