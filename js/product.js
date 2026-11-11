@@ -177,15 +177,15 @@ function renderRelated() {
             : placeholderSVG;
         const badge = p.condition === 'Tweedehands'
             ? `<div class="product-badge used">${t('index.badgeUsed')}</div>`
-            : `<div class="product-badge in">${t('index.badgeNew')}</div>`;
+            : '';
         const voorraad = voorraadInfo(p);
         const uitverkocht = voorraad.aantal <= 0;
         return `
         <div class="product-card" onclick="location.href='product.html?id=${pid}'">
             <div class="product-img">${imgContent}${badge}</div>
             <div class="product-info">
-                <div class="product-name">${esc(naam)}</div>
                 <div class="product-sub">${esc(subtitel)}</div>
+                <div class="product-name">${esc(naam)}</div>
                 <div class="product-footer">
                     <span class="product-price">€ ${esc(p.price)}</span>
                     <button class="btn-add"

@@ -39,6 +39,11 @@ html {
 
     --sidebar-width: 260px;
     --header-h: 60px;
+
+    /* hero-achtergrondfoto: zet hier later je foto,
+       bv. url('../images/hero.jpg'). Met "none" blijft de hero
+       het effen navy verloop van nu. */
+    --hero-image: none;
 }
 
 .contact-grid {
@@ -314,6 +319,59 @@ body {
     color: var(--gold);
 }
 
+/* Hoofdmenu in de topbar: enkel op tablet/desktop (zie media query
+   hieronder). Op telefoon blijft het hamburgermenu + #sidebar. */
+#topbar .topbar-nav {
+    display: none;
+}
+
+@media (min-width: 768px) {
+    #topbar #hamburger {
+        display: none;
+    }
+
+    #topbar .topbar-nav {
+        display: flex;
+        align-items: center;
+        gap: 22px;
+        flex-shrink: 0;
+        margin-left: 8px;
+    }
+
+    #topbar .topbar-nav a {
+        color: rgba(255, 255, 255, .8);
+        font-size: .92rem;
+        font-weight: 500;
+        text-decoration: none;
+        white-space: nowrap;
+        padding: 4px 0;
+        border-bottom: 2px solid transparent;
+        transition: color .15s, border-color .15s;
+    }
+
+    #topbar .topbar-nav a:hover {
+        color: #fff;
+    }
+
+    #topbar .topbar-nav a.active {
+        color: #fff;
+        border-bottom-color: var(--gold);
+    }
+}
+
+/* Tussen 768px en 900px is de topbar krap (merk + menu + zoekbalk +
+   taalknoppen + winkelmandje): menu iets compacter, de zoekbalk krimpt. */
+@media (min-width: 768px) and (max-width: 900px) {
+    #topbar {
+        gap: 12px;
+    }
+
+    #topbar .topbar-nav {
+        gap: 14px;
+        margin-left: 0;
+    }
+}
+
 .topbar-search {
     flex: 1;
     min-width: 0;
@@ -416,6 +474,12 @@ body {
 /* ── HERO ── */
 .hero {
     background: linear-gradient(135deg, var(--dark) 0%, #16213e 100%);
+    /* Gelaagd: donkere navy overlay (links dekkend, rechts lichter) boven
+       de foto uit --hero-image, met het bestaande verloop als onderlaag. */
+    background:
+        linear-gradient(90deg, rgba(26, 26, 46, .92) 0%, rgba(22, 33, 62, .55) 100%),
+        var(--hero-image) center / cover no-repeat,
+        linear-gradient(135deg, var(--dark) 0%, #16213e 100%);
     padding: 64px 40px;
     color: #fff;
     margin-bottom: 40px;
@@ -475,6 +539,18 @@ body {
     background: #dcdee2;
     color: #9aa0a8;
     cursor: not-allowed;
+}
+
+/* Gouden variant, o.a. voor de knop op de navy hero */
+.btn-primary.btn-gold {
+    background: var(--gold);
+    color: var(--accent);
+}
+
+.btn-primary.btn-gold:hover,
+.btn-primary.btn-gold:focus {
+    background: var(--gold-deep);
+    color: var(--accent);
 }
 
 .btn-outline {
@@ -885,6 +961,15 @@ body {
     margin-bottom: 0;
 }
 
+/* Op een productkaart staat het merk (.product-sub) nu boven de naam */
+.product-info .product-sub {
+    margin-bottom: 4px;
+}
+
+.product-info .product-name {
+    margin-bottom: 0;
+}
+
 
 .product-sku {
     font-size: .72rem;
@@ -998,6 +1083,37 @@ body {
 #filter-overlay,
 #filter-panel {
     display: none;
+}
+
+/* Filterbalk: categoriechips links, conditie-toggle rechts. Op telefoon
+   (max 600px) is het een gewoon blok: Filters-knop met de toggle eronder,
+   zoals voorheen. scroll-margin: de topbar is sticky en de hero-knop
+   springt naar #products. */
+.filter-bar {
+    scroll-margin-top: calc(var(--header-h) + 16px);
+}
+
+@media (min-width: 601px) {
+    .filter-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-bottom: 32px;
+    }
+
+    .filter-bar .categories {
+        flex: 1 1 320px;
+        min-width: 0;
+        margin-bottom: 0;
+    }
+
+    .filter-bar .segmented {
+        flex-shrink: 0;
+        margin-bottom: 0;
+        margin-left: auto;
+    }
 }
 
 @media (max-width: 600px) {
@@ -2443,4 +2559,269 @@ form {
     border-radius: 50%;
     animation: spin .7s linear infinite;
     margin: 0 auto;
+}
+
+/* ── MINI-WINKELMAND (zie js/minicart.js) ──
+   Paneel dat van rechts inschuift als je op het winkelmandje klikt. Zelfde kleuren en vormen als de rest van de site. */
+#mini-cart-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .45);
+    z-index: 105;
+}
+
+#mini-cart-overlay.active {
+    display: block;
+}
+
+#mini-cart {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: min(88vw, 360px);
+    height: 100%;
+    background: var(--card-bg);
+    color: var(--text);
+    z-index: 110;
+    display: flex;
+    flex-direction: column;
+    transform: translateX(100%);
+    visibility: hidden;
+    transition: transform .3s ease, visibility .3s;
+    box-shadow: -4px 0 20px rgba(0, 0, 0, .15);
+}
+
+#mini-cart.open {
+    transform: translateX(0);
+    visibility: visible;
+}
+
+.mini-cart-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    background: var(--accent);
+    flex-shrink: 0;
+}
+
+.mini-cart-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--gold);
+}
+
+#mini-cart-close {
+    width: 40px;
+    height: 40px;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 1.1rem;
+    cursor: pointer;
+}
+
+.mini-cart-items {
+    flex: 1;
+    overflow-y: auto;
+    padding: 4px 20px;
+}
+
+.mini-cart-empty {
+    color: var(--muted);
+    text-align: center;
+    padding: 32px 0;
+    margin: 0;
+}
+
+.mini-cart-item {
+    display: flex;
+    gap: 12px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.mini-cart-item:last-child {
+    border-bottom: none;
+}
+
+.mini-cart-img {
+    width: 56px;
+    height: 56px;
+    flex-shrink: 0;
+    border-radius: 8px;
+    background: #f1f2f4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.mini-cart-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.mini-cart-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.mini-cart-name {
+    font-weight: 600;
+    color: var(--dark);
+    line-height: 1.2;
+}
+
+.mini-cart-sub {
+    font-size: .82rem;
+    color: var(--muted);
+}
+
+.mini-cart-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.mini-cart-qty {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.mini-cart-qty .qty-btn {
+    width: 36px;
+    height: 36px;
+    color: var(--text);
+}
+
+.mini-cart-price {
+    font-weight: 700;
+    color: var(--dark);
+    white-space: nowrap;
+}
+
+.mini-cart-remove {
+    align-self: flex-start;
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    background: none;
+    border: none;
+    color: var(--muted);
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mini-cart-remove:hover {
+    color: var(--danger);
+    background: var(--danger-bg);
+}
+
+.mini-cart-footer {
+    flex-shrink: 0;
+    padding: 16px 20px calc(16px + env(safe-area-inset-bottom));
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.mini-cart-subtotal {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1rem;
+}
+
+.mini-cart-subtotal[hidden],
+.mini-cart-go[hidden] {
+    display: none;
+}
+
+.mini-cart-go {
+    display: block;
+    text-align: center;
+    background: var(--accent);
+    color: var(--gold);
+    padding: 14px 18px;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: .95rem;
+    text-decoration: none;
+}
+
+.mini-cart-go:hover {
+    background: var(--accent-light);
+    color: var(--gold);
+}
+
+.mini-cart-continue {
+    background: none;
+    border: none;
+    color: var(--accent);
+    font-size: .9rem;
+    padding: 8px;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+
+/* ── SUGGESTIES ONDERAAN DE WINKELMAND (zie js/suggesties.js) ── */
+.cart-suggesties {
+    margin-top: 48px;
+}
+
+.cart-suggesties .product-grid {
+    margin-bottom: 0;
+}
+
+
+/* Shoppagina: de inhoud is altijd minstens één scherm hoog. Zonder dit is
+   de pagina bij weinig of geen producten (bv. filter "Tweedehands" zonder
+   resultaten) te kort om te scrollen, en doet de knop "Bekijk assortiment"
+   (springt naar #products) niets. */
+#main:has(.filter-bar) {
+    min-height: 100vh;
+}
+
+
+/* ── LEGE STAAT (geen producten, zie legeStaatHTML in js/index.js) ── */
+.empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 48px 16px;
+    color: #c4c8ce;
+}
+
+.empty-state-text {
+    color: var(--text);
+    font-size: 1.05rem;
+    margin: 16px auto 0;
+    max-width: 460px;
+}
+
+.empty-state .btn-primary {
+    border: none;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+.empty-state-contact {
+    color: var(--muted);
+    font-size: .9rem;
+    margin: 18px 0 0;
+}
+
+.empty-state-contact a {
+    color: var(--gold-deep);
+    font-weight: 600;
 }

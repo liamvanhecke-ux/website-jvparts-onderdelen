@@ -23,6 +23,8 @@
                     <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z" />
                     <path d="M9 21V12h6v9" />
                 </svg> <span data-i18n="nav.home">Homepagina</span> </a>
+            <a href="index.html?staat=Tweedehands">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg> <span data-i18n="nav.used">Tweedehands</span> </a>
             <a href="contact.html">
                 <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
@@ -42,6 +44,11 @@
             <span></span><span></span><span></span>
         </button>
         <a href="index.html" class="topbar-brand">JV Parts</a>
+        <nav class="topbar-nav" aria-label="Hoofdmenu">
+            <a href="index.html" class="active" data-i18n="nav.shop">Shop</a>
+            <a href="index.html?staat=Tweedehands" data-i18n="nav.used">Tweedehands</a>
+            <a href="contact.html" data-i18n="nav.contact">Contact</a>
+        </nav>
         <div class="topbar-search">
             <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <circle cx="11" cy="11" r="8" />
@@ -66,19 +73,34 @@
     <section class="hero">
         <h1><span data-i18n="index.heroTitle1">Brom & Scooter</span><br><span data-i18n="index.heroTitle2">Onderdelen</span></h1>
         <p data-i18n="index.heroText">Originele en aftermarket onderdelen voor alle merken. Snel geleverd.</p>
-        <a href="#products" class="btn-primary" data-i18n="index.heroBtn">Bekijk assortiment</a>
+        <a href="#products" class="btn-primary btn-gold" data-i18n="index.heroBtn">Bekijk assortiment</a>
     </section>
     <main id="main">
-        <div class="categories" id="category-chips">
-            <div class="category-chip active" id="products" data-cat="Alles"><span class="chip-check"></span><span data-i18n="index.catAll">Alles</span></div>
+        <div class="filter-bar" id="products">
+            <div class="categories" id="category-chips">
+                <div class="category-chip active" data-cat="Alles"><span class="chip-check"></span><span data-i18n="index.catAll">Alles</span></div>
+            </div>
+            <button type="button" id="filter-trigger" class="filter-trigger">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M4 5h16M7 12h10M10 19h4" stroke-linecap="round" />
+                </svg>
+                <span data-i18n="index.filters">Filters</span>
+                <span class="filter-count" id="filter-count" hidden>0</span>
+            </button>
+            <div class="segmented" id="condition-chips">
+                <div class="segmented-indicator" id="condition-indicator"></div>
+                <div class="segmented-option active" data-cond="Alles" data-i18n="index.condAll">Alles</div>
+                <div class="segmented-option" data-cond="Nieuw" data-i18n="index.condNew">Nieuw</div>
+                <div class="segmented-option" data-cond="Tweedehands" data-i18n="index.condUsed">Tweedehands</div>
+                <div class="segmented-mask" id="condition-mask">
+                    <div class="segmented-gold-row" id="condition-gold-row">
+                        <div class="segmented-option" data-i18n="index.condAll">Alles</div>
+                        <div class="segmented-option" data-i18n="index.condNew">Nieuw</div>
+                        <div class="segmented-option" data-i18n="index.condUsed">Tweedehands</div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <button type="button" id="filter-trigger" class="filter-trigger">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path d="M4 5h16M7 12h10M10 19h4" stroke-linecap="round" />
-            </svg>
-            <span data-i18n="index.filters">Filters</span>
-            <span class="filter-count" id="filter-count" hidden>0</span>
-        </button>
         <div id="filter-overlay"></div>
         <div id="filter-panel" role="dialog" aria-modal="true">
             <div class="filter-panel-header">
@@ -87,19 +109,6 @@
             </div>
             <div class="filter-panel-list" id="filter-panel-list"></div>
             <button type="button" id="filter-panel-apply" data-i18n="index.filterApply">Toepassen</button>
-        </div>
-        <div class="segmented" id="condition-chips">
-            <div class="segmented-indicator" id="condition-indicator"></div>
-            <div class="segmented-option active" data-cond="Alles" data-i18n="index.condAll">Alles</div>
-            <div class="segmented-option" data-cond="Nieuw" data-i18n="index.condNew">Nieuw</div>
-            <div class="segmented-option" data-cond="Tweedehands" data-i18n="index.condUsed">Tweedehands</div>
-            <div class="segmented-mask" id="condition-mask">
-                <div class="segmented-gold-row" id="condition-gold-row">
-                    <div class="segmented-option" data-i18n="index.condAll">Alles</div>
-                    <div class="segmented-option" data-i18n="index.condNew">Nieuw</div>
-                    <div class="segmented-option" data-i18n="index.condUsed">Tweedehands</div>
-                </div>
-            </div>
         </div>
         <div class="section-title" data-i18n="index.sectionTitle">Producten</div>
         <div class="product-grid" id="product-grid">
@@ -132,6 +141,7 @@
     <script src="js/i18n.js"></script>
     <script src="js/cart.js"></script>
     <script src="js/sidebar.js"></script>
+    <script src="js/minicart.js"></script>
     <script src="js/index.js"></script>
 </body>
 

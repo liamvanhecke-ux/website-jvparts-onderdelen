@@ -109,6 +109,8 @@ function changeQty(id, delta) {
 function removeItem(id) {
     saveCart(getCart().filter(i => i.id !== id));
     renderWinkelmand();
+    /* Laat js/suggesties.js weten dat dit product opnieuw voorgesteld mag worden */
+    document.dispatchEvent(new Event('winkelmandGewijzigd'));
 }
 
 document.querySelectorAll('input[name="verzending"]').forEach(radio => {
