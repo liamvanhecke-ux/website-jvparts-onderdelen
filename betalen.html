@@ -215,8 +215,19 @@
                     <span data-i18n="cart.btwNote">Incl. 21% btw</span>
                     <span id="bt-btw">&euro;&nbsp;0,00</span>
                 </div>
+                <div class="akkoord">
+                    <label class="akkoord-label" for="akkoord-voorwaarden">
+                        <input type="checkbox" id="akkoord-voorwaarden">
+                        <span data-i18n="betalen.accept">Ik ga akkoord met de algemene voorwaarden en heb het privacybeleid gelezen.</span>
+                    </label>
+                    <p class="akkoord-links">
+                        <a href="voorwaarden.html" target="_blank" rel="noopener" data-i18n="footer.terms">Algemene voorwaarden</a> ·
+                        <a href="privacy.html" target="_blank" rel="noopener" data-i18n="footer.privacy">Privacybeleid</a> ·
+                        <a href="voorwaarden.html#herroepingsrecht" target="_blank" rel="noopener" data-i18n="withdraw.right">Herroepingsrecht</a>
+                    </p>
+                </div>
                 <button class="btn-betaal" id="betaal-knop" onclick="startBetaling()">
-                    <span id="betaal-tekst">Nu betalen</span>
+                    <span id="betaal-tekst">Bestellen en betalen</span>
                     <div class="spinner" id="betaal-spinner"></div>
                 </button>
                 <a href="checkout.html" class="cart-continue" data-i18n="betalen.backToDetails">&#8592; Terug naar
@@ -241,6 +252,7 @@
                 <h6 data-i18n="footer.infoTitle">Informatie</h6>
                 <p><a href="voorwaarden.html" data-i18n="footer.terms">Algemene voorwaarden</a></p>
                 <p><a href="privacy.html" data-i18n="footer.privacy">Privacybeleid</a></p>
+                <p><a href="herroepen.html" data-i18n="footer.withdraw">Bestelling herroepen</a></p>
                 <p><a href="contact.html" data-i18n="nav.contact">Contact</a></p>
             </div>
         </div>

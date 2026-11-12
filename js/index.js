@@ -1,11 +1,9 @@
+/* Netlify Identity op de homepagina dient enkel om een uitnodiging of een
+   wachtwoord-reset (de link in de mail) af te handelen. Na het inloggen
+   sturen we bewust NIET door naar de beheerpagina: dat adres staat nergens
+   in de publieke code. De beheerder surft er zelf naartoe. */
 if (window.netlifyIdentity) {
-    window.netlifyIdentity.on('init', user => {
-        if (!user) {
-            window.netlifyIdentity.on('login', () => {
-                document.location.href = '/admin/';
-            });
-        }
-    });
+    window.netlifyIdentity.on('login', () => window.netlifyIdentity.close());
 }
 
 const placeholderSVG = `<svg fill="none" stroke="#ccc" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="12" cy="12" r="4"/></svg>`;

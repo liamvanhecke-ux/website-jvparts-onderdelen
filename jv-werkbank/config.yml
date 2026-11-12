@@ -14,7 +14,7 @@ collections:
       - name: "producten"
         label: "Producten beheren"
         file: "data/products.json"
-        description: "Voorraad aanpassen? Ga naar /admin/voorraad.html. Voeg producten toe, pas ze aan, sleep om te herordenen of verwijder met de ✕. Rechts zie je meteen hoe het in de winkel toont."
+        description: "Voorraad aanpassen? Ga naar /jv-werkbank/voorraad.html. Voeg producten toe, pas ze aan, sleep om te herordenen of verwijder met de ✕. Rechts zie je meteen hoe het in de winkel toont."
         fields:
           - label: "Producten"
             name: "products"
@@ -89,7 +89,7 @@ collections:
                 value_type: "int"
                 min: 0
                 default: 1
-                hint: "Enkel voor een NIEUW product: met hoeveel stuks start het? Daarna telt de site automatisch af bij elke verkoop. Voorraad van bestaande producten aanpassen (bijbestellen) doe je op /admin/voorraad.html."
+                hint: "Enkel voor een NIEUW product: met hoeveel stuks start het? Daarna telt de site automatisch af bij elke verkoop. Voorraad van bestaande producten aanpassen (bijbestellen) doe je op /jv-werkbank/voorraad.html."
               - label: "Afbeelding"
                 name: "image"
                 widget: "image"

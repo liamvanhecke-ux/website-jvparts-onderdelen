@@ -432,12 +432,31 @@ body {
     color: var(--accent);
 }
 
-/* Op erg smalle schermen is er geen plaats voor zoekbalk + taalknoppen +
-   winkelmandje naast elkaar, dus wijkt de zoekbalk hier. Zoeken blijft
-   mogelijk via het menu / de shoppagina. */
+/* Op smalle schermen (kleiner dan een iPhone Pro Max) is er geen plaats
+   voor zoekbalk + taalknoppen + winkelmandje naast elkaar. De zoekbalk
+   krijgt daar een eigen, tweede rij onder het logo: zo blijft zoeken
+   altijd zichtbaar. De topbar wordt hier dus hoger (--header-h). */
 @media (max-width: 430px) {
-    .topbar-search {
-        display: none;
+    :root {
+        --header-h: 108px;
+    }
+
+    #topbar {
+        flex-wrap: wrap;
+        align-content: center;
+        row-gap: 8px;
+        padding: 8px 14px;
+    }
+
+    #topbar .taal-switcher {
+        margin-left: auto;
+    }
+
+    #topbar .topbar-search {
+        order: 10;
+        flex: 0 0 100%;
+        max-width: none;
+        margin-left: 0;
     }
 }
 
@@ -2824,4 +2843,95 @@ form {
 .empty-state-contact a {
     color: var(--gold-deep);
     font-weight: 600;
+}
+
+
+/* ── HERROEPINGSFORMULIER (herroepen.html, js/herroepen.js) ── */
+#herroep-succes[hidden],
+#herroep-stap1[hidden],
+#herroep-stap2[hidden],
+#herroep-form[hidden],
+#herroep-model[hidden] {
+    display: none;
+}
+
+.herroep-form .form-field {
+    margin-bottom: 16px;
+}
+
+.herroep-form .herroep-knop,
+.herroep-acties .btn-outline {
+    border: none;
+    cursor: pointer;
+    margin-top: 8px;
+}
+
+.herroep-acties .btn-outline {
+    border: 1.5px solid var(--accent);
+}
+
+.herroep-acties {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.herroep-overzicht {
+    margin: 0 0 20px;
+}
+
+.herroep-overzicht dt {
+    font-size: .8rem;
+    color: var(--muted);
+    margin-top: 12px;
+}
+
+.herroep-overzicht dd {
+    margin: 0;
+    font-weight: 600;
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+}
+
+.herroep-model {
+    margin-top: 32px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+}
+
+.herroep-model summary {
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: 12px;
+}
+
+/* ── AKKOORD MET VOORWAARDEN (betalen.html) ── */
+.akkoord {
+    margin-top: 16px;
+    font-size: .88rem;
+}
+
+.akkoord-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.akkoord-label input {
+    width: 18px;
+    height: 18px;
+    margin-top: 2px;
+    flex-shrink: 0;
+    accent-color: var(--accent);
+}
+
+.akkoord-links {
+    margin: 8px 0 0 28px;
+    font-size: .82rem;
+}
+
+.akkoord-links a {
+    color: var(--gold-deep);
 }

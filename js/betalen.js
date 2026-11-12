@@ -68,6 +68,14 @@ async function startBetaling() {
         return;
     }
 
+    /* De klant moet de algemene voorwaarden aanvaarden vóór hij bestelt */
+    const akkoord = document.getElementById('akkoord-voorwaarden');
+    if (akkoord && !akkoord.checked) {
+        showToast(t('betalen.acceptRequired'));
+        akkoord.focus();
+        return;
+    }
+
     const klantRaw = localStorage.getItem('jvparts_checkout');
     const klant = klantRaw ? JSON.parse(klantRaw) : {};
 

@@ -103,6 +103,8 @@ function renderInfoTabs(p, beschrijving, categorie) {
         [t('product.brand'), veldVoorTaal(p, 'subtitle')],
         [t('product.category'), categorie],
         [t('product.condition'), staat],
+        /* Wettelijke garantie: 2 jaar, of 1 jaar voor tweedehands (moet bij de aankoop gemeld zijn) */
+        [t('product.warranty'), p.condition === 'Tweedehands' ? t('product.warrantyUsed') : t('product.warrantyNew')],
     ].filter(([, waarde]) => waarde && String(waarde).trim());
 
     paneelKenmerken.innerHTML = rijen.length
