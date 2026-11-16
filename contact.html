@@ -10,7 +10,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JV-Parts</title>
+    <meta name="description" content="Contacteer JV Parts in Zingem voor vragen over brom- en scooteronderdelen of over je bestelling.">
+    <title>JV-Parts Contact</title>
 </head>
 
 <body>
@@ -54,7 +55,7 @@
                 <circle cx="11" cy="11" r="8" />
                 <line x1="21" y1="21" x2="16.65" y2="16.65" />
             </svg>
-            <input type="text" data-i18n-placeholder="common.searchPlaceholder" placeholder="Zoek onderdelen...">
+            <input type="text" aria-label="Zoek onderdelen" data-i18n-aria-label="common.searchLabel" data-i18n-placeholder="common.searchPlaceholder" placeholder="Zoek onderdelen...">
         </div>
         <div class="taal-switcher">
             <button class="taal-knop" data-taal="nl">NL</button>
@@ -79,6 +80,7 @@
                 </div>
                 <form action="https://api.web3forms.com/submit" method="POST">
                     <input type="hidden" name="access_key" value="29357d41-a413-48bb-b211-559dca9a44d7">
+                    <input type="hidden" name="from_name" value="JV Parts contactformulier">
                     <input type="hidden" name="subject" value="Nieuw bericht via contactformulier">
                     <div class="field">
                         <label for="naam" class="form-label" data-i18n="contact.fullName">Voornaam & achternaam</label>
@@ -91,7 +93,7 @@
                                required>
                     </div>
                     <div class="field">
-                        <label class="form-label" data-i18n="contact.phone">Telefoon</label>
+                        <label for="telefoon" class="form-label" data-i18n="contact.phone">Telefoon</label>
                         <div class="tel-group">
                             <div class="land-dropdown" id="landDropdown">
                                 <button type="button" class="land-knop" id="landKnop">
@@ -154,10 +156,10 @@
     <section style="margin-top:48px;margin-bottom:40px;">
         <div style="max-width:1100px;margin:0 auto;padding:0 40px;">
             <div style="overflow:hidden;height:300px;border-radius:20px;">
-                <iframe title="Locatie JV-Parts"
-                        style="border:0;display:block;width:100%;height:340px;margin-bottom:-40px;" loading="lazy"
-                        src="https://www.openstreetmap.org/export/embed.html?bbox=3.5400%2C50.8550%2C3.6800%2C50.8950&layer=mapnik&marker=50.8730%2C3.6110">
-                </iframe>
+<div class="kaart-placeholder" id="kaart-placeholder">
+                    <p data-i18n="contact.mapNote">De kaart wordt geladen van OpenStreetMap. Daarbij wordt je IP-adres met OpenStreetMap gedeeld.</p>
+                    <button type="button" class="btn-primary" id="kaart-knop" data-i18n="contact.showMap">Kaart tonen</button>
+                </div>
             </div>
             <p style="font-size:.72rem;color:var(--muted);text-align:right;margin-top:6px;" data-i18n="contact.mapCredit"> Kaart © OpenStreetMap </p>
         </div>

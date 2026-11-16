@@ -1,28 +1,25 @@
 // Live voorraad in Netlify Blobs.
 //
-// - data/products.json  = productinfo + STARTvoorraad (voor een nieuw product)
+// - Supabase (tabel producten, via lib/producten.mjs; reserve = data/products.json)
+//                       = productinfo + STARTvoorraad (voor een nieuw product)
 // - Netlify Blobs       = de echte, live voorraad per product (key = product-ID)
 //
-// Heeft een product nog geen blob, dan geldt de "stock" uit products.json.
+// Heeft een product nog geen blob, dan geldt de startvoorraad van het product.
 // Vanaf de eerste verkoop of aanpassing via de voorraadpagina staat het
 // actuele aantal in Blobs. Een product zonder "stock"-veld = onbeperkt (null).
 
 import { getStore } from '@netlify/blobs';
-import data from '../../data/products.json' with { type: 'json' };
+import { haalProducten, reserveProducten, slugify } from './producten.mjs';
 
-export const producten = data.products || [];
+export { slugify };
 
-export function slugify(str) {
-  return String(str)
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-|-$/g, '');
-}
+// Oude naam, blijft bestaan: de statische reservelijst uit data/products.json.
+// De echte lijst komt uit haalProducten() (Supabase).
+export const producten = reserveProducten;
 
-export function zoekProduct(id) {
-  return producten.find((p) => slugify(p.name) === id) || null;
+// LET OP: async. Altijd `await zoekProduct(id)`, anders lijkt een Promise een gevonden product.
+export async function zoekProduct(id) {
+  return (await haalProducten()).find((p) => p.id === id) || null;
 }
 
 function startVoorraad(p) {
@@ -42,8 +39,8 @@ export const reserveringen = () => getStore({ name: 'reserveringen', consistency
 //     bijgewerkt: "..." }
 // Beschikbaar voor klanten = stock - actieve (niet verlopen) reserveringen.
 
-function maakToestand(data, id) {
-  const stock = data && typeof data.stock === 'number' ? data.stock : startVoorraad(zoekProduct(id));
+async function maakToestand(data, id) {
+  const stock = data && typeof data.stock === 'number' ? data.stock : startVoorraad(await zoekProduct(id));
   const nu = Date.now();
   const actief = {};
   for (const [rid, r] of Object.entries((data && data.reserveringen) || {})) {
@@ -60,15 +57,15 @@ function samenvatting(t) {
 
 // { stock, gereserveerd, beschikbaar } van 1 product (null = onbeperkt).
 export async function lees(id) {
-  return samenvatting(maakToestand(await winkel().get(id, { type: 'json' }), id));
+  return samenvatting(await maakToestand(await winkel().get(id, { type: 'json' }), id));
 }
 
 // { id: { stock, gereserveerd, beschikbaar } } voor alle producten.
 export async function leesAlles() {
   const uit = {};
-  await Promise.all(producten.map(async (p) => {
-    const id = slugify(p.name);
-    uit[id] = await lees(id);
+  const lijst = await haalProducten();
+  await Promise.all(lijst.map(async (p) => {
+    uit[p.id] = await lees(p.id);
   }));
   return uit;
 }
@@ -81,7 +78,7 @@ async function pasAan(id, wijzig) {
   const store = winkel();
   for (let poging = 0; poging < 8; poging++) {
     const huidig = await store.getWithMetadata(id, { type: 'json' });
-    const toestand = maakToestand(huidig && huidig.data, id);
+    const toestand = await maakToestand(huidig && huidig.data, id);
     if (toestand.stock === null) return { ok: true, onbeperkt: true };
 
     const voor = samenvatting(toestand);

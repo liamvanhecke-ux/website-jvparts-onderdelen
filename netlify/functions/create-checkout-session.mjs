@@ -1,9 +1,9 @@
 // Maakt een Stripe Checkout Session aan op basis van de winkelmand.
 // Prijzen worden NOOIT vertrouwd vanuit de browser: we zoeken ze hier
-// opnieuw op in data/products.json, zodat een klant de prijs niet kan
+// opnieuw op in de database (lib/producten.mjs), zodat een klant de prijs niet kan
 // manipuleren via de browserconsole of een aangepaste request.
 //
-// De prijzen in data/products.json en de verzendkosten zijn btw-inclusief
+// De prijzen in de database en de verzendkosten zijn btw-inclusief
 // (de eindprijs die de klant betaalt), dus hier komt er niets meer bij.
 //
 // RESERVERING: zodra een klant op "Nu betalen" klikt, houden we de stuks
@@ -103,7 +103,7 @@ export default async (req, context) => {
   const lineItems = [];
   const items = [];
   for (const item of cart) {
-    const product = zoekProduct(item.id);
+    const product = await zoekProduct(item.id);
     if (!product) {
       return json(400, { error: `Onbekend product: ${item.id}` });
     }

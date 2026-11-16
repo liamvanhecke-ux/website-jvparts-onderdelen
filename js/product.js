@@ -27,7 +27,7 @@ function renderDetail() {
     const p = huidigProduct;
     if (!p) return;
 
-    const pid = slugify(p.name);
+    const pid = productId(p);
     const naam = veldVoorTaal(p, 'name');
     const subtitel = veldVoorTaal(p, 'subtitle');
     const categorie = vertaalCategorie(p.category, alleProducten);
@@ -173,7 +173,7 @@ function renderRelated() {
     grid.innerHTML = verwant.map(p => {
         const naam = veldVoorTaal(p, 'name');
         const subtitel = veldVoorTaal(p, 'subtitle');
-        const pid = slugify(p.name);
+        const pid = productId(p);
         const imgContent = p.image
             ? `<img src="${esc(p.image)}" alt="${esc(naam)}" style="width:100%;height:100%;object-fit:cover;">`
             : placeholderSVG;
@@ -225,7 +225,7 @@ function addProductFromCard(btn) {
 function maxKiesbaar() {
     if (!huidigProduct) return 99;
     const voorraad = voorraadAantal(huidigProduct);
-    const rest = voorraad - aantalInWinkelmand(slugify(huidigProduct.name));
+    const rest = voorraad - aantalInWinkelmand(productId(huidigProduct));
     return Math.max(1, Math.min(99, rest));
 }
 
@@ -237,12 +237,11 @@ function laadProduct() {
     const params = new URLSearchParams(window.location.search);
     const id = params.get('id');
 
-    fetch('/data/products.json')
-        .then(r => r.json())
-        .then(data => laadLiveVoorraad(data.products || []))
+    laadProducten()
+        .then(producten => laadLiveVoorraad(producten))
         .then(producten => {
             alleProducten = producten;
-            huidigProduct = id ? alleProducten.find(p => slugify(p.name) === id) : null;
+            huidigProduct = id ? alleProducten.find(p => productId(p) === id) : null;
 
             if (!huidigProduct) {
                 document.getElementById('product-notfound').style.display = '';

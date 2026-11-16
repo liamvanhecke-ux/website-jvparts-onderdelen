@@ -1,0 +1,30 @@
+# Houdt de gratis Supabase-database wakker.
+# Een gratis Supabase-project wordt gepauzeerd als er een week lang niets mee
+# gebeurt. Deze workflow doet daarom elke dag één kleine leesaanvraag
+# (één categorie opvragen), zodat de database altijd "in gebruik" blijft.
+#
+# Let op: GitHub schakelt geplande workflows zelf uit als er ongeveer 60 dagen
+# geen activiteit (bv. een commit) in de repo is. Je krijgt dan een mail en
+# kan de workflow weer aanzetten onder het tabblad "Actions".
+#
+# De sleutel hieronder is de PUBLIEKE sleutel (dezelfde als in js/config.js),
+# die mag dus gewoon in de repo staan.
+name: Supabase wakker houden
+
+on:
+  schedule:
+    - cron: '17 5 * * *' # elke dag om 05:17 UTC
+  workflow_dispatch: # ook met de hand te starten vanuit "Actions"
+
+# Deze workflow heeft geen enkele toegang tot de repo nodig
+permissions: {}
+
+jobs:
+  keepalive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Kleine leesaanvraag naar de database
+        run: |
+          curl --fail --silent --show-error --max-time 30 \
+            -H "apikey: sb_publishable_U_xHzuA1lU3m9jDMSJ3wvA_AWjaYYdO" \
+            "https://vuscwojadpdyzzgzsofz.supabase.co/rest/v1/categorieen?select=id&limit=1"

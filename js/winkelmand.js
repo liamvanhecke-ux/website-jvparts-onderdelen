@@ -44,7 +44,7 @@ function renderWinkelmand() {
                 <button class="qty-btn" onclick="changeQty('${item.id}', 1)">&#43;</button>
             </div>
             <div class="cart-item-price">&#8364;&nbsp;${prijs.toFixed(2).replace('.', ',')}</div>
-            <button class="cart-item-remove" aria-label="Verwijder artikel" onclick="removeItem('${item.id}')">
+            <button class="cart-item-remove" aria-label="${esc(t('cart.removeItem'))}" onclick="removeItem('${item.id}')">
                 <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <polyline points="3 6 5 6 21 6"/>
                     <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>

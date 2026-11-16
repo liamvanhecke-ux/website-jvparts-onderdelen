@@ -95,7 +95,7 @@ function renderSamenvatting(opts) {
     const ph = `<svg width="22" height="22" fill="none" stroke="#ccc" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="12" cy="12" r="4"/></svg>`;
 
     itemsEl.innerHTML = cart.length === 0
-        ? '<p style="color:var(--muted);font-size:.85rem;text-align:center;padding:8px 0;">Winkelmand is leeg</p>'
+        ? `<p style="color:var(--muted);font-size:.85rem;text-align:center;padding:8px 0;">${esc(t('cart.empty'))}</p>`
         : cart.map(item => {
             const prijs = parsePrice(item.price) * item.qty;
             return `
@@ -208,7 +208,7 @@ async function laadLiveVoorraad(producten) {
         if (!res.ok) throw new Error(res.status);
         const { voorraad } = await res.json();
         producten.forEach(p => {
-            const v = voorraad && voorraad[slugify(p.name)];
+            const v = voorraad && voorraad[p.id || slugify(p.name)];
             if (!v || v.beschikbaar === null) return; // onbeperkt of onbekend
             p.stock = v.beschikbaar;          // wat klanten nog kunnen kopen
             p.gereserveerd = v.gereserveerd;  // stuks in lopende betalingen

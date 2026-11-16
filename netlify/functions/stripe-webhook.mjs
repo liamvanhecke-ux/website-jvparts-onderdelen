@@ -1,6 +1,8 @@
 // Stripe roept deze functie aan na een betaling:
 // - betaald             -> reservering wordt een verkoop (voorraad −)
 // - verlopen/mislukt    -> gereserveerde stuks komen terug vrij
+// Een betaalde bestelling gaat daarna ook als kopie naar Supabase
+// (lib/bestellingen-db.mjs); lukt dat niet, dan wordt dat enkel gelogd.
 //
 // Instellen in Stripe (Developers → Webhooks → Add endpoint):
 //   URL:     https://<jouw-site>/.netlify/functions/stripe-webhook
@@ -13,6 +15,7 @@
 
 import Stripe from 'stripe';
 import { bevestig, bestellingen, reserveringen, annuleerReservering } from '../lib/voorraad.mjs';
+import { schrijfBestelling } from '../lib/bestellingen-db.mjs';
 
 const tekst = (status, body) => new Response(body, { status });
 
@@ -93,6 +96,10 @@ export default async (req) => {
       await store.setJSON(session.id, bestelling);
     }
     if (rid) await reserveringen().delete(rid);
+
+    // Extra kopie van de bestelling naar Supabase (cijfers in het beheer).
+    // Gooit nooit en verandert niets aan het antwoord of aan de voorraad.
+    await schrijfBestelling(session, regels.data, event.created).catch(() => {});
     return tekst(200, 'OK');
   } catch (err) {
     console.error('Webhook verwerken mislukt:', err);

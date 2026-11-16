@@ -1,107 +1,359 @@
-<!doctype html>
-<html>
-
+<!DOCTYPE html>
+<html lang="nl">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex">
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>JV-Parts Admin</title>
-  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  <title>JV Parts beheer</title>
+  <link rel="icon" href="/images/favicon.ico">
+  <link rel="stylesheet" href="beheer.css">
 </head>
-
 <body>
-  <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
-  <script>
-    (function () {
 
-      var previewStyles = `
-        .jv-pane { font-family: 'Segoe UI', system-ui, sans-serif; color:#222; padding:20px; }
-        .jv-head { display:flex; align-items:center; justify-content:space-between;
-                   margin-bottom:18px; padding-bottom:14px; border-bottom:1px solid #e6e3dc; }
-        .jv-head-title { font-size:1.05rem; font-weight:700; color:#15243d; }
-        .jv-head-count { font-size:.78rem; font-weight:600; color:#b8893f; background:#fbf0d8;
-                         padding:4px 11px; border-radius:20px; white-space:nowrap; }
-        .jv-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); gap:16px; }
-        .jv-card { background:#fff; border:1px solid #e6e3dc; border-radius:14px; overflow:hidden;
-                   box-shadow:0 1px 3px rgba(21,36,61,.05); }
-        .jv-img { aspect-ratio:1; display:flex; align-items:center; justify-content:center;
-                  color:#b9bdc4; font-size:.75rem; letter-spacing:.3px;
-                  background:repeating-linear-gradient(45deg,#f1f2f4 0 10px,#eef0f2 10px 20px); }
-        .jv-photo { width:100%; height:100%; object-fit:cover; display:block; }
-        .jv-body { padding:16px 16px 18px; }
-        .jv-badge { display:inline-block; font-size:.68rem; font-weight:600; padding:3px 9px;
-                    border-radius:6px; margin-bottom:8px; color:#15243d; background:#eef1f6; }
-        .jv-name { font-size:1.05rem; font-weight:600; color:#15243d; line-height:1.2; }
-        .jv-sub { font-size:.9rem; color:#8a8f98; margin-top:3px; min-height:1em; }
-        .jv-foot { display:flex; align-items:center; justify-content:space-between;
-                   margin-top:14px; padding-top:14px; border-top:1px solid #eceae4; }
-        .jv-price { font-size:1.15rem; font-weight:700; color:#15243d; }
-        .jv-add { background:#15243d; color:#fff; border:none; border-radius:8px;
-                  padding:8px 12px; font-size:.76rem; font-weight:600; cursor:default; }
-        .jv-empty { padding:48px 20px; text-align:center; color:#8a8f98; }
-      `;
-      CMS.registerPreviewStyle(previewStyles, { raw: true });
+  <!-- 1. Wachtscherm: zichtbaar tot we weten of je ingelogd bent -->
+  <div id="scherm-laden" class="midden">
+    <p class="gedempt">Even laden...</p>
+  </div>
 
+  <!-- 2. Inloggen (er is bewust GEEN formulier om een account aan te maken) -->
+  <main id="scherm-login" class="midden" hidden>
+    <div class="kaart inlogkaart">
+      <h1 class="logo">JV<span>Parts</span> · beheer</h1>
 
-      var ProductenPreview = createClass({
-        render: function () {
-          var entry = this.props.entry;
-          var getAsset = this.props.getAsset;
-          var products = entry.getIn(['data', 'products']);
-          var list = products ? products.toArray() : [];
+      <form id="login-form" novalidate>
+        <p class="gedempt">Log in met je beheerdersaccount.</p>
+        <label for="login-email">E-mailadres</label>
+        <input type="email" id="login-email" autocomplete="username" required>
+        <label for="login-wachtwoord">Wachtwoord</label>
+        <input type="password" id="login-wachtwoord" autocomplete="current-password" required>
+        <button type="submit" class="knop primair breed" id="login-knop">Inloggen</button>
+        <button type="button" class="linkknop" id="naar-vergeten">Wachtwoord vergeten?</button>
+      </form>
 
-          if (list.length === 0) {
-            return h('div', { className: 'jv-pane' },
-              h('div', { className: 'jv-empty' },
-                'Nog geen producten. Klik links op "+ Voeg producten toe" om te starten.')
-            );
-          }
+      <form id="vergeten-form" novalidate hidden>
+        <p class="gedempt">Vul je e-mailadres in. Je krijgt een mail met een link om een nieuw wachtwoord te kiezen.</p>
+        <label for="vergeten-email">E-mailadres</label>
+        <input type="email" id="vergeten-email" autocomplete="username" required>
+        <button type="submit" class="knop primair breed" id="vergeten-knop">Stuur de link</button>
+        <button type="button" class="linkknop" id="naar-login">Terug naar inloggen</button>
+      </form>
 
-          var cards = list.map(function (p, i) {
-            var name = p.get('name') || 'Naamloos product';
-            var sub = p.get('subtitle') || '';
-            var price = p.get('price') || '–';
-            var cat = p.get('category') || '';
-            var image = p.get('image');
+      <p class="formmelding" id="login-melding" role="alert"></p>
+    </div>
+  </main>
 
-            var imgEl;
-            if (image) {
-              var src = '';
-              try { src = getAsset(image); } catch (e) { src = ''; }
-              imgEl = h('img', { className: 'jv-photo', src: src, alt: name });
-            } else {
-              imgEl = h('span', null, 'geen foto');
-            }
+  <!-- 3. Nieuw wachtwoord kiezen (na het klikken op de link uit de mail) -->
+  <main id="scherm-nieuw-wachtwoord" class="midden" hidden>
+    <div class="kaart inlogkaart">
+      <h1 class="logo">JV<span>Parts</span> · beheer</h1>
+      <form id="nieuw-ww-form" novalidate>
+        <p class="gedempt">Kies een nieuw wachtwoord van minstens 8 tekens.</p>
+        <label for="nieuw-ww">Nieuw wachtwoord</label>
+        <input type="password" id="nieuw-ww" autocomplete="new-password" required>
+        <label for="nieuw-ww-2">Herhaal het wachtwoord</label>
+        <input type="password" id="nieuw-ww-2" autocomplete="new-password" required>
+        <button type="submit" class="knop primair breed" id="nieuw-ww-knop">Wachtwoord opslaan</button>
+      </form>
+      <p class="formmelding" id="nieuw-ww-melding" role="alert"></p>
+    </div>
+  </main>
 
-            return h('div', { className: 'jv-card', key: i },
-              h('div', { className: 'jv-img' }, imgEl),
-              h('div', { className: 'jv-body' },
-                cat ? h('span', { className: 'jv-badge' }, cat) : null,
-                h('div', { className: 'jv-name' }, name),
-                h('div', { className: 'jv-sub' }, sub),
-                h('div', { className: 'jv-foot' },
-                  h('span', { className: 'jv-price' }, '\u20AC ' + price),
-                  h('button', { className: 'jv-add' }, '+ Voeg toe')
-                )
-              )
-            );
-          });
+  <!-- 4. Het beheer zelf -->
+  <div id="scherm-beheer" hidden>
+    <header class="kop">
+      <h1 class="logo">JV<span>Parts</span> · beheer</h1>
+      <span class="ingelogd" id="ingelogd-als"></span>
+      <button type="button" class="knop kopknop" id="vernieuwen">Vernieuwen</button>
+      <button type="button" class="knop kopknop" id="uitloggen">Uitloggen</button>
+    </header>
 
-          return h('div', { className: 'jv-pane' },
-            h('div', { className: 'jv-head' },
-              h('div', { className: 'jv-head-title' }, 'Voorvertoning winkel'),
-              h('div', { className: 'jv-head-count' }, list.length + ' producten')
-            ),
-            h('div', { className: 'jv-grid' }, cards)
-          );
-        }
-      });
+    <nav class="menu" id="menu" aria-label="Beheer">
+      <a href="#overzicht" data-tab="overzicht">Overzicht <span class="teller" id="teller-aandacht" hidden></span></a>
+      <a href="#producten" data-tab="producten">Producten</a>
+      <a href="#bestellingen" data-tab="bestellingen">Bestellingen</a>
+      <a href="voorraad.html">Voorraad <span class="teller" id="teller-voorraad" hidden></span></a>
+      <a href="#categorieen" data-tab="categorieen">Categorieën</a>
+      <a href="#instellingen" data-tab="instellingen">Instellingen</a>
+    </nav>
 
+    <div class="meldingbalk" id="melding" role="status" aria-live="polite" hidden>
+      <span id="melding-tekst"></span>
+      <button type="button" class="linkknop" id="melding-sluit">Sluiten</button>
+    </div>
 
-      CMS.registerPreviewTemplate('winkel', ProductenPreview);
-      CMS.registerPreviewTemplate('producten', ProductenPreview);
-    })();
-  </script>
+    <main class="inhoud">
+
+      <!-- Overzicht -->
+      <section id="tab-overzicht" aria-labelledby="titel-overzicht">
+        <h2 id="titel-overzicht">Overzicht</h2>
+        <div class="tegels" id="cijfers"></div>
+
+        <div class="kaart leeg" id="overzicht-leeg" hidden>
+          <h3>Nog geen bestellingen</h3>
+          <p class="gedempt">Zodra een klant betaalt, zie je hier de omzet, de grafieken en de best verkochte producten.</p>
+        </div>
+
+        <div id="overzicht-verkoop">
+          <div class="kaart">
+            <h3>Omzet per dag, laatste 30 dagen</h3>
+            <div id="grafiek-dagen"></div>
+          </div>
+          <div class="kaart">
+            <h3>Omzet per maand, laatste 12 maanden</h3>
+            <div id="grafiek-maanden"></div>
+          </div>
+          <div class="kaart">
+            <h3>Top 5 best verkocht</h3>
+            <ol class="toplijst" id="top-producten"></ol>
+          </div>
+        </div>
+
+        <div class="kaart">
+          <h3>Aandacht nodig</h3>
+          <p class="gedempt" id="aandacht-uitleg"></p>
+          <p class="opmerking" id="voorraad-opmerking" hidden>De live voorraad kon niet geladen worden. Je ziet de startvoorraad van elk product, die kan afwijken van wat er echt nog ligt.</p>
+          <ul class="aandachtlijst" id="aandacht-lijst"></ul>
+        </div>
+      </section>
+
+      <!-- Producten -->
+      <section id="tab-producten" aria-labelledby="titel-producten" hidden>
+        <div id="producten-lijst-blok">
+          <h2 id="titel-producten">Producten</h2>
+          <div class="kaart">
+            <div class="balk">
+              <input type="search" id="product-zoek" placeholder="Zoek op naam, merk of categorie..." aria-label="Zoek een product">
+              <button type="button" class="knop primair" id="product-nieuw">Product toevoegen</button>
+            </div>
+            <p class="gedempt klein" id="product-telling"></p>
+            <div class="tabelwrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Foto</th><th>Product</th><th class="smal-weg">Categorie</th><th>Prijs</th>
+                    <th class="smal-weg">Staat</th><th>Actief</th><th>Voorraad</th>
+                    <th class="smal-weg">Verkocht</th><th>Acties</th>
+                  </tr>
+                </thead>
+                <tbody id="product-rijen"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div id="product-formulier-blok" hidden>
+          <button type="button" class="linkknop" id="product-terug">← Terug naar de lijst</button>
+          <h2 id="product-formulier-titel">Product</h2>
+          <form id="product-form" class="kaart" novalidate>
+            <fieldset>
+              <legend>Basis</legend>
+              <div class="veld">
+                <label for="p-naam">Naam</label>
+                <input type="text" id="p-naam" maxlength="200" required>
+                <p class="hint">Bijv. Cilinderset 50cc</p>
+              </div>
+              <div class="veld">
+                <label for="p-id">ID van het product</label>
+                <input type="text" id="p-id" readonly>
+                <p class="hint" id="p-id-hint"></p>
+              </div>
+              <div class="veld">
+                <label for="p-subtitel">Merk / subtitel</label>
+                <input type="text" id="p-subtitel" maxlength="200">
+                <p class="hint">Bijv. Honda / Peugeot of Universeel</p>
+              </div>
+              <div class="rij">
+                <div class="veld">
+                  <label for="p-prijs">Prijs in euro</label>
+                  <input type="text" id="p-prijs" inputmode="decimal" required>
+                  <p class="hint">Alleen het bedrag, met komma of punt. Bijv. 34,95</p>
+                </div>
+                <div class="veld">
+                  <label for="p-categorie">Categorie</label>
+                  <select id="p-categorie"></select>
+                  <p class="hint">Een nieuwe nodig? Maak ze aan onder Categorieën.</p>
+                </div>
+              </div>
+              <div class="rij">
+                <div class="veld">
+                  <label for="p-staat">Staat</label>
+                  <select id="p-staat">
+                    <option value="Nieuw">Nieuw</option>
+                    <option value="Tweedehands">Tweedehands</option>
+                  </select>
+                  <p class="hint">Verschijnt als filter op de site.</p>
+                </div>
+                <div class="veld">
+                  <label for="p-voorraad">Startvoorraad</label>
+                  <input type="number" id="p-voorraad" min="0" step="1" inputmode="numeric">
+                  <p class="hint">Met hoeveel stuks start een nieuw product? Daarna telt de site zelf af bij elke verkoop. Bijbestellen doe je op de pagina Voorraad. Leeg = onbeperkt.</p>
+                </div>
+              </div>
+              <div class="rij">
+                <div class="veld">
+                  <label for="p-volgorde">Volgorde</label>
+                  <input type="number" id="p-volgorde" step="1" inputmode="numeric">
+                  <p class="hint">Een lager getal staat hoger in de winkel. Je kan ook de pijltjes in de lijst gebruiken.</p>
+                </div>
+                <div class="veld vinkveld">
+                  <label><input type="checkbox" id="p-actief"> Actief (zichtbaar in de winkel)</label>
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <legend>Foto</legend>
+              <div class="fotoveld">
+                <div class="fotovoorbeeld" id="p-foto-voorbeeld"></div>
+                <div>
+                  <label for="p-foto">Kies een foto</label>
+                  <input type="file" id="p-foto" accept="image/*">
+                  <p class="hint">Optioneel. De foto wordt automatisch verkleind voor het opladen. Geen foto? Dan toont de site een nette placeholder.</p>
+                  <p class="hint" id="p-foto-info"></p>
+                  <button type="button" class="knop" id="p-foto-weg" hidden>Foto weghalen</button>
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <legend>Beschrijving</legend>
+              <div class="veld">
+                <label for="p-beschrijving">Beschrijving</label>
+                <textarea id="p-beschrijving" rows="5"></textarea>
+                <p class="hint">Optioneel. Extra uitleg die enkel op de productpagina verschijnt. Laat een lege regel tussen alinea's.</p>
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <legend>Frans</legend>
+              <p class="hint">Optioneel. Leeg = bezoekers zien de Nederlandse tekst.</p>
+              <div class="veld"><label for="p-naam-fr">Naam (Frans)</label><input type="text" id="p-naam-fr" maxlength="200"></div>
+              <div class="veld"><label for="p-subtitel-fr">Merk / subtitel (Frans)</label><input type="text" id="p-subtitel-fr" maxlength="200"></div>
+              <div class="veld"><label for="p-beschrijving-fr">Beschrijving (Frans)</label><textarea id="p-beschrijving-fr" rows="4"></textarea></div>
+            </fieldset>
+
+            <fieldset>
+              <legend>Duits</legend>
+              <p class="hint">Optioneel. Leeg = bezoekers zien de Nederlandse tekst.</p>
+              <div class="veld"><label for="p-naam-de">Naam (Duits)</label><input type="text" id="p-naam-de" maxlength="200"></div>
+              <div class="veld"><label for="p-subtitel-de">Merk / subtitel (Duits)</label><input type="text" id="p-subtitel-de" maxlength="200"></div>
+              <div class="veld"><label for="p-beschrijving-de">Beschrijving (Duits)</label><textarea id="p-beschrijving-de" rows="4"></textarea></div>
+            </fieldset>
+
+            <ul class="formmelding" id="product-fouten" role="alert"></ul>
+            <div class="knoppen">
+              <button type="submit" class="knop primair" id="product-bewaar">Opslaan</button>
+              <button type="button" class="knop" id="product-annuleer">Annuleren</button>
+              <button type="button" class="knop gevaar rechts" id="product-verwijder" hidden>Verwijderen</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- Bestellingen -->
+      <section id="tab-bestellingen" aria-labelledby="titel-bestellingen" hidden>
+        <div id="bestellingen-lijst-blok">
+          <h2 id="titel-bestellingen">Bestellingen</h2>
+          <div class="kaart">
+            <div class="balk">
+              <input type="search" id="b-zoek" placeholder="Zoek op klant, e-mail, product of nummer..." aria-label="Zoek een bestelling">
+              <select id="b-periode" aria-label="Periode">
+                <option value="alles">Alle bestellingen</option>
+                <option value="vandaag">Vandaag</option>
+                <option value="week">Deze week</option>
+                <option value="maand">Deze maand</option>
+                <option value="vorige-maand">Vorige maand</option>
+                <option value="jaar">Dit jaar</option>
+                <option value="aangepast">Zelf kiezen</option>
+              </select>
+              <span id="b-datums" class="datums" hidden>
+                <label for="b-van">Van</label> <input type="date" id="b-van">
+                <label for="b-tot">tot en met</label> <input type="date" id="b-tot">
+              </span>
+              <button type="button" class="knop" id="b-csv">Exporteer CSV</button>
+            </div>
+            <p class="gedempt klein" id="b-telling"></p>
+            <div class="tabelwrap">
+              <table>
+                <thead>
+                  <tr><th>Datum</th><th>Klant</th><th class="smal-weg">Artikelen</th><th>Bedrag</th><th class="smal-weg">Verzending</th><th>Detail</th></tr>
+                </thead>
+                <tbody id="b-rijen"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div id="bestelling-detail-blok" hidden>
+          <button type="button" class="linkknop" id="b-terug">← Terug naar de lijst</button>
+          <h2>Bestelling</h2>
+          <div class="kaart" id="b-detail"></div>
+        </div>
+      </section>
+
+      <!-- Categorieën -->
+      <section id="tab-categorieen" aria-labelledby="titel-categorieen" hidden>
+        <h2 id="titel-categorieen">Categorieën</h2>
+        <div class="kaart">
+          <p class="gedempt">De naam verschijnt als keuze bij een product en als filter op de site. Frans en Duits zijn optioneel.</p>
+          <div id="categorie-rijen"></div>
+        </div>
+        <form id="categorie-form" class="kaart" novalidate>
+          <h3>Categorie toevoegen</h3>
+          <div class="rij">
+            <div class="veld"><label for="c-naam">Naam</label><input type="text" id="c-naam" maxlength="100" required></div>
+            <div class="veld"><label for="c-naam-fr">Naam (Frans)</label><input type="text" id="c-naam-fr" maxlength="100"></div>
+            <div class="veld"><label for="c-naam-de">Naam (Duits)</label><input type="text" id="c-naam-de" maxlength="100"></div>
+          </div>
+          <p class="formmelding" id="categorie-fout" role="alert"></p>
+          <button type="submit" class="knop primair" id="c-toevoegen">Toevoegen</button>
+        </form>
+      </section>
+
+      <!-- Instellingen -->
+      <section id="tab-instellingen" aria-labelledby="titel-instellingen" hidden>
+        <h2 id="titel-instellingen">Instellingen</h2>
+
+        <form id="drempel-form" class="kaart" novalidate>
+          <h3>Melding "bijna op"</h3>
+          <div class="veld kort">
+            <label for="drempel">Waarschuw vanaf dit aantal stuks of minder</label>
+            <input type="number" id="drempel" min="0" max="999" step="1" inputmode="numeric" required>
+            <p class="hint">Een nieuw product met zoveel stuks of minder komt bij Aandacht nodig. Tweedehands producten tellen alleen mee als ze uitverkocht zijn, want daar is er meestal maar één van.</p>
+          </div>
+          <p class="formmelding" id="drempel-fout" role="alert"></p>
+          <button type="submit" class="knop primair" id="drempel-bewaar">Opslaan</button>
+        </form>
+
+        <div class="kaart">
+          <h3>Producten exporteren</h3>
+          <p class="gedempt">Je krijgt één bestand met alle categorieën en producten. Bewaar het als back-up, of gebruik het om naar een andere database te verhuizen. De foto's zelf zitten niet in het bestand, alleen hun naam.</p>
+          <button type="button" class="knop" id="export-knop">Exporteer producten</button>
+        </div>
+
+        <div class="kaart">
+          <h3>Producten importeren</h3>
+          <p class="gedempt">Kies een bestand dat je hier eerder exporteerde. Je ziet eerst wat er verandert. Importeren voegt toe en werkt bij, het verwijdert nooit iets.</p>
+          <label for="import-bestand">Exportbestand (.json)</label>
+          <input type="file" id="import-bestand" accept=".json,application/json">
+          <div id="import-voorbeeld" hidden></div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Eigen bevestigingsvenster (in plaats van window.confirm) -->
+  <div class="overlay" id="dialoog" hidden>
+    <div class="dialoog" role="dialog" aria-modal="true" aria-labelledby="dialoog-titel" aria-describedby="dialoog-tekst">
+      <h2 id="dialoog-titel"></h2>
+      <div id="dialoog-tekst"></div>
+      <div class="knoppen" id="dialoog-knoppen"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/js/config.js"></script>
+  <script src="beheer.js"></script>
 </body>
-
 </html>

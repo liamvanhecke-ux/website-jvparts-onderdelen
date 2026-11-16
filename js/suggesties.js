@@ -26,10 +26,10 @@
     function kiesSuggesties() {
         const inMand = new Set(getCart().map(i => i.id));
         const categorieenInMand = new Set(
-            alleProducten.filter(p => inMand.has(slugify(p.name))).map(p => p.category)
+            alleProducten.filter(p => inMand.has(productId(p))).map(p => p.category)
         );
         const kandidaten = alleProducten.filter(p =>
-            !inMand.has(slugify(p.name)) && voorraadInfo(p).aantal > 0
+            !inMand.has(productId(p)) && voorraadInfo(p).aantal > 0
         );
         /* Zelfde categorie eerst; binnen elke groep de goedkoopste eerst.
            parsePrice (js/cart.js) maakt van "34,95" het getal 34.95. */
@@ -51,7 +51,7 @@
         grid.innerHTML = suggesties.map(p => {
             const naam = vertaaldVeld(p, 'name');
             const subtitel = vertaaldVeld(p, 'subtitle');
-            const pid = slugify(p.name);
+            const pid = productId(p);
             const imgContent = p.image
                 ? `<img src="${esc(p.image)}" alt="${esc(naam)}" style="width:100%;height:100%;object-fit:cover;">`
                 : PLACEHOLDER;
@@ -107,9 +107,8 @@
     document.addEventListener('winkelmandGewijzigd', render);
     document.addEventListener('taalGewijzigd', render);
 
-    fetch('/data/products.json')
-        .then(r => r.json())
-        .then(data => laadLiveVoorraad(data.products || []))
+    laadProducten()
+        .then(producten => laadLiveVoorraad(producten))
         .then(producten => {
             alleProducten = producten;
             render();

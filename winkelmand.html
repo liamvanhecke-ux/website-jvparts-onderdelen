@@ -10,6 +10,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
     <title>JV-Parts Winkelmand</title>
 </head>
 
@@ -54,7 +55,7 @@
                 <circle cx="11" cy="11" r="8" />
                 <line x1="21" y1="21" x2="16.65" y2="16.65" />
             </svg>
-            <input type="text" data-i18n-placeholder="common.searchPlaceholder" placeholder="Zoek onderdelen...">
+            <input type="text" aria-label="Zoek onderdelen" data-i18n-aria-label="common.searchLabel" data-i18n-placeholder="common.searchPlaceholder" placeholder="Zoek onderdelen...">
         </div>
         <div class="taal-switcher">
             <button class="taal-knop" data-taal="nl">NL</button>
@@ -149,6 +150,16 @@
                     <a href="checkout.html" class="btn-primary cart-checkout-btn"
                        data-i18n="cart.checkout" style="display:block;text-align:center;">Afrekenen</a>
                     <a href="index.html" class="cart-continue" data-i18n="cart.backToShopping">&#8592; Verder winkelen</a>
+                    <div class="bestel-info">
+                        <p data-i18n="cart.deliveryInfo">We leveren in België, Nederland, Luxemburg, Frankrijk en Duitsland. Afhalen kan in Zingem.</p>
+                        <div class="product-trust-row">
+                            <span data-i18n="cart.paymentInfo">Betalen kan met</span>
+                            <img src="images/bancontact.png" alt="Bancontact" loading="lazy">
+                            <img src="images/idealpng.png" alt="iDEAL" loading="lazy">
+                            <img src="images/visa.png" alt="Visa / Mastercard" loading="lazy">
+                            <img src="images/paypal.png" alt="PayPal" loading="lazy">
+                        </div>
+                    </div>
                 </div>
             </aside>
         </div>
@@ -186,6 +197,8 @@
     <script src="js/sidebar.js"></script>
     <script src="js/topbar-search.js"></script>
     <script src="js/winkelmand.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/producten-bron.js"></script>
     <script src="js/suggesties.js"></script>
 </body>
 
