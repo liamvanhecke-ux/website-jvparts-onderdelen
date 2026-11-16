@@ -6,7 +6,6 @@
   <meta name="robots" content="noindex">
   <title>JV-Parts Voorraad</title>
   <link rel="icon" href="/images/favicon.ico">
-  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
   <style>
     :root { --accent:#15243d; --gold:#c9a55c; --bg:#f4f5f7; --card:#fff; --border:#e6e3dc; --muted:#8a8f98;
             --ok:#2f8a5b; --ok-bg:#e7f3ec; --low:#9a6b08; --low-bg:#fbf0d8; --out:#a32d2d; --out-bg:#f7e9e9; }
@@ -45,9 +44,8 @@
     <a href="/jv-werkbank/">← Producten beheren</a>
   </header>
   <main>
-    <div class="kaart login" id="login" hidden>
-      <p>Log in met je beheerdersaccount om de voorraad aan te passen.</p>
-      <button class="primair" onclick="netlifyIdentity.open('login')">Inloggen</button>
+    <div class="kaart login" id="login">
+      <p>Even laden...</p>
     </div>
 
     <div class="kaart" id="app" hidden>
@@ -63,12 +61,18 @@
     </div>
   </main>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/js/config.js"></script>
   <script>
+    /* Inloggen gebeurt op /jv-werkbank/ (index.html) met Supabase. Deze
+       pagina gebruikt dezelfde sessie (supabase-js bewaart die in de
+       browser) en stuurt bij het opslaan het toegangstoken mee, zodat de
+       Netlify-functie kan nagaan dat je beheerder bent. */
+    const sb = window.supabase && typeof SUPABASE_URL !== 'undefined'
+      ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
     const LAGE_GRENS = 2; // zelfde als LAGE_VOORRAAD_GRENS in js/cart.js
     let producten = [];   // { id, name, subtitle, condition, stock, origineel }
 
-    const slugify = s => String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
-      .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
     const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]));
 
     function status(p) {
@@ -88,7 +92,7 @@
         .map(p => {
           const [cls, tekst] = status(p);
           const tweedehands = p.condition === 'Tweedehands';
-          return `<tr data-id="${p.id}" class="${p.stock !== p.origineel ? 'gewijzigd' : ''}">
+          return `<tr data-id="${esc(p.id)}" class="${p.stock !== p.origineel ? 'gewijzigd' : ''}">
             <td><div class="naam">${esc(p.name)}</div><div class="sub">${esc(p.subtitle)}</div></td>
             <td class="kolom-staat"><span class="label ${tweedehands ? 'used' : 'nieuw'}">${tweedehands ? 'Tweedehands' : 'Nieuw'}</span></td>
             <td><div class="stepper">
@@ -111,7 +115,7 @@
       const n = parseInt(waarde, 10);
       p.stock = isNaN(n) ? p.origineel : Math.max(0, n);
       toon();
-      document.querySelector(`tr[data-id="${id}"] input`)?.focus();
+      document.querySelector(`tr[data-id="${CSS.escape(id)}"] input`)?.focus();
     }
 
     document.getElementById('lijst').addEventListener('click', e => {
@@ -133,15 +137,17 @@
 
     async function laad() {
       melding('Laden...');
-      const [data, live] = await Promise.all([
-        fetch('/data/products.json', { cache: 'no-store' }).then(r => r.json()),
+      // Producten uit Supabase (ook inactieve: als beheerder zie je alles).
+      // SQL: SELECT id, naam, subtitel, staat FROM producten ORDER BY volgorde, naam
+      const [res, live] = await Promise.all([
+        sb.from('producten').select('id, naam, subtitel, staat').order('volgorde').order('naam'),
         fetch('/.netlify/functions/voorraad', { cache: 'no-store' }).then(r => r.json()),
       ]);
-      producten = (data.products || []).map(p => {
-        const id = slugify(p.name);
-        const v = live.voorraad && live.voorraad[id];
+      if (res.error) throw res.error;
+      producten = (res.data || []).map(p => {
+        const v = live.voorraad && live.voorraad[p.id];
         const stock = v ? v.stock : null;
-        return { id, name: p.name, subtitle: p.subtitle || '', condition: p.condition || 'Nieuw', stock, origineel: stock,
+        return { id: p.id, name: p.naam, subtitle: p.subtitel || '', condition: p.staat || 'Nieuw', stock, origineel: stock,
                  gereserveerd: v ? v.gereserveerd : 0 };
       });
       toon();
@@ -149,14 +155,14 @@
     }
 
     document.getElementById('opslaan').addEventListener('click', async () => {
-      const user = netlifyIdentity.currentUser();
-      if (!user) return netlifyIdentity.open('login');
+      const { data: sessie } = await sb.auth.getSession();
+      if (!sessie.session) return naarLogin();
       const wijzigingen = {};
       producten.filter(p => p.stock !== p.origineel && p.stock !== null).forEach(p => wijzigingen[p.id] = p.stock);
       const knop = document.getElementById('opslaan');
       knop.disabled = true; melding('Opslaan...');
       try {
-        const token = await user.jwt();
+        const token = sessie.session.access_token;
         const res = await fetch('/.netlify/functions/voorraad', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
@@ -176,15 +182,22 @@
       }
     });
 
-    function start(user) {
-      document.getElementById('login').hidden = !!user;
-      document.getElementById('app').hidden = !user;
-      if (user) laad().catch(() => melding('✋ Kon de voorraad niet laden. Staat de site online op Netlify?', 'fout'));
+    // Niet ingelogd? Dan naar het inlogscherm van het beheer.
+    function naarLogin() { location.href = 'index.html'; }
+
+    async function start() {
+      if (!sb) {
+        document.querySelector('#login p').textContent = 'De verbinding met de database kon niet geladen worden. Herlaad de pagina.';
+        return;
+      }
+      sb.auth.onAuthStateChange(event => { if (event === 'SIGNED_OUT') setTimeout(naarLogin, 0); });
+      const { data } = await sb.auth.getSession();
+      if (!data.session) return naarLogin();
+      document.getElementById('login').hidden = true;
+      document.getElementById('app').hidden = false;
+      laad().catch(() => melding('✋ Kon de voorraad niet laden. Staat de site online op Netlify?', 'fout'));
     }
-    netlifyIdentity.on('init', start);
-    netlifyIdentity.on('login', user => { netlifyIdentity.close(); start(user); });
-    netlifyIdentity.on('logout', () => start(null));
-    netlifyIdentity.init();
+    start();
   </script>
 </body>
 </html>
