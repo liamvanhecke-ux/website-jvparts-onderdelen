@@ -93,6 +93,7 @@ async function startBetaling() {
                 verzending: getVerzendingPrijs(),
                 klant,
                 vorigeSessie: localStorage.getItem(BETALING_KEY) || undefined,
+                taal: typeof huidigeTaal !== 'undefined' ? huidigeTaal : 'nl',
             }),
         });
 

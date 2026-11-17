@@ -76,10 +76,12 @@ const komma = n => (Number(n) || 0).toFixed(2).replace('.', ',');
 
 /* Prijs uit een invoerveld: "12,5", "12.50" of "12" mag. Max 2 decimalen,
    niet negatief. Geeft null terug als het geen geldige prijs is. */
+const MAX_PRIJS = 99999999.99; // hoogste prijs die in numeric(10,2) past
 function leesPrijs(tekst) {
   const t = String(tekst ?? '').trim().replace(/\s|€/g, '');
   if (!/^\d+([.,]\d{1,2})?$/.test(t)) return null;
-  return Math.round(parseFloat(t.replace(',', '.')) * 100) / 100;
+  const prijs = Math.round(parseFloat(t.replace(',', '.')) * 100) / 100;
+  return prijs <= MAX_PRIJS ? prijs : null;
 }
 
 /* Een heel getal >= 0, of null bij een leeg veld. undefined = ongeldig. */
@@ -489,6 +491,10 @@ function problemenVan(p) {
   if (!(p.beschrijving || '').trim()) lijst.push({ tekst: 'Geen beschrijving', cls: 'grijs' });
   if (!(p.naam_fr || '').trim()) lijst.push({ tekst: 'Geen Franse naam', cls: 'grijs' });
   if (!(p.naam_de || '').trim()) lijst.push({ tekst: 'Geen Duitse naam', cls: 'grijs' });
+  if ((p.beschrijving || '').trim()) {
+    if (!(p.beschrijving_fr || '').trim()) lijst.push({ tekst: 'Geen Franse beschrijving', cls: 'grijs' });
+    if (!(p.beschrijving_de || '').trim()) lijst.push({ tekst: 'Geen Duitse beschrijving', cls: 'grijs' });
+  }
   return lijst;
 }
 
@@ -1232,9 +1238,13 @@ function controleerImport(data) {
     if (!ID_REGEL.test(String(p.id))) fouten.push(`${waar}: ongeldig ID.`);
     if (prodIds.has(p.id)) fouten.push(`${waar}: ID komt twee keer voor.`);
     prodIds.add(p.id);
-    if (!tekstOfNull(p.naam)) fouten.push(`${waar}: naam ontbreekt.`);
-    const prijs = Number(p.prijs);
-    if (p.prijs === null || p.prijs === '' || !(prijs >= 0) || Math.abs(Math.round(prijs * 100) - prijs * 100) > 1e-6) fouten.push(`${waar}: ongeldige prijs.`);
+    if (typeof p.naam !== 'string' || !tekstOfNull(p.naam)) fouten.push(`${waar}: naam ontbreekt of is geen tekst.`);
+    for (const k of TEKST_KOLOMMEN) {
+      if (p[k] !== undefined && p[k] !== null && typeof p[k] !== 'string') fouten.push(`${waar}: ${k} moet tekst zijn.`);
+    }
+    const prijs = p.prijs;
+    if (typeof prijs !== 'number' || !(prijs >= 0) || prijs > MAX_PRIJS || Math.abs(Math.round(prijs * 100) - prijs * 100) > 1e-6) fouten.push(`${waar}: ongeldige prijs (een getal, bv. 12.5).`);
+    if (p.aangemaakt !== undefined && p.aangemaakt !== null && (typeof p.aangemaakt !== 'string' || isNaN(Date.parse(p.aangemaakt)))) fouten.push(`${waar}: ongeldige datum bij "aangemaakt".`);
     if (!['Nieuw', 'Tweedehands'].includes(p.staat)) fouten.push(`${waar}: staat moet Nieuw of Tweedehands zijn.`);
     const voorraad = p.start_voorraad ?? null;
     if (voorraad !== null && !(Number.isInteger(voorraad) && voorraad >= 0)) fouten.push(`${waar}: ongeldige startvoorraad.`);
@@ -1286,9 +1296,14 @@ async function voerImportUit({ categorieen, producten }, knop) {
       // Eerst categorieën (producten verwijzen ernaar), dan producten.
       // upsert = INSERT ... ON CONFLICT (id) DO UPDATE: toevoegen of bijwerken, nooit verwijderen.
       if (categorieen.length) await db(sb.from('categorieen').upsert(categorieen, { onConflict: 'id' }));
-      if (producten.length) await db(sb.from('producten').upsert(producten, { onConflict: 'id' }));
+      if (producten.length) {
+        try { await db(sb.from('producten').upsert(producten, { onConflict: 'id' })); }
+        catch (fout) { fout.deels = categorieen.length > 0; throw fout; }
+      }
       gelukt = true;
-    } catch (fout) { melding(foutTekst(fout), 'fout'); }
+    } catch (fout) {
+      melding(foutTekst(fout) + (fout.deels ? ' Let op: de categorieën zijn wel al opgeslagen, de producten niet.' : ''), 'fout');
+    }
   });
   if (!gelukt) return;
   $('#import-voorbeeld').hidden = true;

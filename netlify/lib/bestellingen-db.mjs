@@ -81,8 +81,30 @@ async function post(basis, sleutel, tabel, body, prefer) {
   return res;
 }
 
+// Telt hoeveel bestelregels er al zijn voor een bestelling.
+async function telRegels(basis, sleutel, bestellingId) {
+  const res = await fetch(`${basis}/rest/v1/bestelregels?select=id&bestelling_id=eq.${encodeURIComponent(bestellingId)}`, {
+    headers: { apikey: sleutel, Authorization: `Bearer ${sleutel}` },
+    signal: AbortSignal.timeout(TIMEOUT_MS),
+  });
+  if (!res.ok) throw new Error(`bestelregels lezen: status ${res.status}`);
+  const lijst = await res.json();
+  return Array.isArray(lijst) ? lijst.length : 0;
+}
+
+// Schrijft de regels; bij een fout nog één keer opnieuw proberen
+// (de webhook antwoordt altijd 200, dus Stripe stuurt niet opnieuw).
+async function schrijfRegels(basis, sleutel, bestelregels) {
+  try {
+    await post(basis, sleutel, 'bestelregels', bestelregels, 'return=minimal');
+  } catch (eerste) {
+    await new Promise((r) => setTimeout(r, 500));
+    await post(basis, sleutel, 'bestelregels', bestelregels, 'return=minimal');
+  }
+}
+
 // Geeft terug wat er gebeurd is (handig voor logs/tests): 'overgeslagen',
-// 'bestond-al', 'geschreven' of 'fout'.
+// 'bestond-al', 'regels-aangevuld', 'geschreven' of 'fout'.
 export async function schrijfBestelling(session, regels, betaaldOp) {
   const sleutel = process.env.SUPABASE_SERVICE_KEY;
   // De sleutel mag nooit in een log staan, ook niet via een foutmelding.
@@ -101,20 +123,27 @@ export async function schrijfBestelling(session, regels, betaaldOp) {
     const { bestelling, regels: bestelregels } = maakBestelling(session, regels, betaaldOp);
 
     // 1) De bestelling. Bestaat ze al (Stripe stuurde het event opnieuw), dan
-    //    komt er een lege lijst terug en stoppen we: zo is er nooit een dubbel.
+    //    komt er een lege lijst terug: zo is er nooit een dubbele bestelling.
     const res = await post(basis, sleutel, 'bestellingen', bestelling, 'resolution=ignore-duplicates,return=representation');
     const gemaakt = await res.json();
-    if (!Array.isArray(gemaakt) || gemaakt.length === 0) return 'bestond-al';
+    const bestondAl = !Array.isArray(gemaakt) || gemaakt.length === 0;
 
-    // 2) Alle regels in één keer.
+    // 2) De regels. Bestond de bestelling al, dan kijken we eerst of de regels
+    //    er ook staan: een vorige poging kan halverwege mislukt zijn.
     if (bestelregels.length > 0) {
+      if (bestondAl) {
+        const aantal = await telRegels(basis, sleutel, session.id);
+        if (aantal > 0) return 'bestond-al';
+      }
       try {
-        await post(basis, sleutel, 'bestelregels', bestelregels, 'return=minimal');
+        await schrijfRegels(basis, sleutel, bestelregels);
       } catch (err) {
         console.error(veilig(`Bestelling ${session.id} staat in Supabase, maar de bestelregels NIET: ${err && err.message}`));
         return 'fout';
       }
+      return bestondAl ? 'regels-aangevuld' : 'geschreven';
     }
+    if (bestondAl) return 'bestond-al';
     return 'geschreven';
   } catch (err) {
     console.error(veilig(`Bestelling naar Supabase schrijven mislukt: ${err && err.message}`));

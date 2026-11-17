@@ -15,6 +15,7 @@ import Stripe from 'stripe';
 import { randomUUID } from 'node:crypto';
 import { zoekProduct, reserveer, annuleerReservering, reserveringen, json } from '../lib/voorraad.mjs';
 import { magDoor } from '../lib/ratelimit.mjs';
+import { haalProducten, prijzenBetrouwbaar } from '../lib/producten.mjs';
 
 const RESERVERING_MINUTEN = 30; // minimum dat Stripe toelaat voor expires_at
 
@@ -83,7 +84,8 @@ export default async (req, context) => {
     return json(400, { error: 'Ongeldige aanvraag.' });
   }
 
-  const { cart, methode, klant, verzending, vorigeSessie } = payload || {};
+  const { cart, methode, klant, verzending, vorigeSessie, taal } = payload || {};
+  const klantTaal = ['nl', 'fr', 'de'].includes(taal) ? taal : 'nl';
 
   if (!Array.isArray(cart) || cart.length === 0) {
     return json(400, { error: 'Winkelmand is leeg.' });
@@ -95,6 +97,13 @@ export default async (req, context) => {
   const stripeMethode = METHODE_MAP[methode];
   if (!stripeMethode) {
     return json(400, { error: 'Onbekende betaalmethode.' });
+  }
+
+  // Prijzen alleen uit de database. Is die niet bereikbaar (en hebben we nog
+  // geen eerdere lijst), dan liever even niet afrekenen dan een oude prijs.
+  await haalProducten();
+  if (!prijzenBetrouwbaar()) {
+    return json(503, { error: 'Betalen lukt even niet. Probeer het over een paar minuten opnieuw.' });
   }
 
   await ruimVorigeBetalingOp(stripe, vorigeSessie);
@@ -176,6 +185,7 @@ export default async (req, context) => {
       payment_method_types: [stripeMethode],
       line_items: lineItems,
       customer_email: klantData.email || undefined,
+      locale: klantTaal,
       success_url: `${origin}/klaar.html?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/betalen.html?geannuleerd={CHECKOUT_SESSION_ID}`,
       metadata: {
@@ -192,6 +202,7 @@ export default async (req, context) => {
         ),
         land: kort(klantData.land),
         opmerking: kort(klantData.opmerking),
+        taal: klantTaal,
       },
     });
 

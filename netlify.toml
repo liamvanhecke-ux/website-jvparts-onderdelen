@@ -14,6 +14,23 @@
   status = 404
   force = true
 
+# De map database/ bevat het plan, het schema en de afspraken (geen sleutels).
+# Bezoekers hebben daar niets te zoeken: het plan noemt o.a. het adres van
+# het beheer. Daarom ook hier een 404.
+[[redirects]]
+  from = "/database/*"
+  to = "/404.html"
+  status = 404
+  force = true
+
+# Het oude Decap-beheer staat nog in de map (bewaard), maar wordt niet meer
+# geserveerd: het zou data/products.json kunnen wijzigen.
+[[redirects]]
+  from = "/jv-werkbank/oud-decap/*"
+  to = "/404.html"
+  status = 404
+  force = true
+
 # Beveiligingsheaders die overal gelden, ook op /admin: ze zeggen niets over
 # wélke scripts/stijlen mogen laden, dus ze kunnen Decap CMS niet breken.
 [[headers]]
@@ -80,5 +97,10 @@
 
 [[headers]]
   for = "/herroepen.html"
+  [headers.values]
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self' data: https://vuscwojadpdyzzgzsofz.supabase.co; font-src 'self' https://cdn.jsdelivr.net; connect-src 'self' https://api.zippopotam.us https://vuscwojadpdyzzgzsofz.supabase.co; frame-src https://www.openstreetmap.org; form-action 'self' https://api.web3forms.com; frame-ancestors 'none'; base-uri 'self'; object-src 'none'"
+
+[[headers]]
+  for = "/404.html"
   [headers.values]
     Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self' data: https://vuscwojadpdyzzgzsofz.supabase.co; font-src 'self' https://cdn.jsdelivr.net; connect-src 'self' https://api.zippopotam.us https://vuscwojadpdyzzgzsofz.supabase.co; frame-src https://www.openstreetmap.org; form-action 'self' https://api.web3forms.com; frame-ancestors 'none'; base-uri 'self'; object-src 'none'"

@@ -91,3 +91,4 @@ mislukken: alleen `console.error`. De voorraad en Blobs blijven werken zoals nu.
 | Server | alles in `netlify/` |
 | Beheer | alles in `jv-werkbank/` |
 | Baas | `database/`, `js/config.js` |
+| Gedeeld (enkel vertalingen/aria, na overleg) | `js/i18n.js`, `js/contact.js`, `js/minicart.js`, `js/winkelmand.js`, `js/betalen.js`, `css/style.css` |

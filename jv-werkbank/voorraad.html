@@ -137,10 +137,10 @@
 
     async function laad() {
       melding('Laden...');
-      // Producten uit Supabase (ook inactieve: als beheerder zie je alles).
-      // SQL: SELECT id, naam, subtitel, staat FROM producten ORDER BY volgorde, naam
+      // Enkel actieve producten: alleen die hebben een live voorraad.
+      // SQL: SELECT id, naam, subtitel, staat FROM producten WHERE actief ORDER BY volgorde, naam
       const [res, live] = await Promise.all([
-        sb.from('producten').select('id, naam, subtitel, staat').order('volgorde').order('naam'),
+        sb.from('producten').select('id, naam, subtitel, staat').eq('actief', true).order('volgorde').order('naam'),
         fetch('/.netlify/functions/voorraad', { cache: 'no-store' }).then(r => r.json()),
       ]);
       if (res.error) throw res.error;
@@ -193,6 +193,12 @@
       sb.auth.onAuthStateChange(event => { if (event === 'SIGNED_OUT') setTimeout(naarLogin, 0); });
       const { data } = await sb.auth.getSession();
       if (!data.session) return naarLogin();
+      // Ingelogd, maar ook beheerder? (RLS: je ziet enkel je eigen rij.)
+      const { data: rij } = await sb.from('beheerders').select('user_id').eq('user_id', data.session.user.id).maybeSingle();
+      if (!rij) {
+        document.querySelector('#login p').textContent = 'Dit account heeft geen toegang tot het beheer.';
+        return;
+      }
       document.getElementById('login').hidden = true;
       document.getElementById('app').hidden = false;
       laad().catch(() => melding('✋ Kon de voorraad niet laden. Staat de site online op Netlify?', 'fout'));

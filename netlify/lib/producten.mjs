@@ -29,7 +29,7 @@ const TIMEOUT_MS = 4000;
 // Cache op module-niveau: Netlify kan dezelfde functie-instantie hergebruiken
 // voor meerdere aanvragen, dan blijft deze cache tussen de aanvragen bestaan.
 // Een prijswijziging in het beheer is dus pas na maximaal 60 s zichtbaar voor de server.
-let cache = null;        // { producten, tot, bron: 'supabase' | 'reserve' }
+let cache = null;        // { producten, tot, bron: 'supabase' | 'vorige' | 'reserve' }
 let laatsteGoed = null;  // laatste geslaagde lijst uit Supabase (ook als de cache verlopen is)
 let bezig = null;        // lopende aanvraag, zodat gelijktijdige aanroepen samen wachten
 
@@ -112,13 +112,21 @@ export async function haalProducten() {
         `Producten ophalen uit Supabase mislukt (${err && err.message}): ` +
         (laatsteGoed ? 'de vorige lijst wordt verder gebruikt.' : 'producten komen uit data/products.json.')
       );
-      cache = { producten, tot: Date.now() + FOUT_CACHE_MS, bron: 'reserve' };
+      cache = { producten, tot: Date.now() + FOUT_CACHE_MS, bron: laatsteGoed ? 'vorige' : 'reserve' };
     } finally {
       bezig = null;
     }
     return cache.producten;
   })();
   return bezig;
+}
+
+// true als de prijzen uit Supabase komen (nu of bij de vorige geslaagde
+// aanvraag). false = ze komen uit data/products.json, dat het beheer NIET
+// bijwerkt: dan mag er niet afgerekend worden (verkeerde prijs, of een product
+// dat intussen uit de winkel is). Roep eerst haalProducten() aan.
+export function prijzenBetrouwbaar() {
+  return !!cache && cache.bron !== 'reserve';
 }
 
 // Enkel voor tests: cache leegmaken.
